@@ -270,7 +270,7 @@ exports.paymentService = async (requestId,user,amount) => {
             customer_phone: user?.phone
         },
         order_meta: {
-          return_url: "http://localhost:3000/sent-requests" // ✅ Redirect after success
+          return_url: "https://rentify-furd.onrender.com/sent-requests" // ✅ Redirect after success
       }
     };
 

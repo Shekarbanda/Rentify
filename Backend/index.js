@@ -20,7 +20,7 @@ app.use(express.json())
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = ['http://localhost:3000', 'http://localhost:3000']
+      const allowedOrigins = ['http://localhost:3000', 'https://rentify-furd.onrender.com']
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true)
       } else {
