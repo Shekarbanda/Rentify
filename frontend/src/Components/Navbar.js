@@ -185,7 +185,7 @@ export default function Navbar() {
   return (
     <>
       <div
-        className={`max-w-[100%] z-[50] flex mx-auto box-sizing h-[3.2rem] lg:h-[4.3rem] shadow-md border-b-2 lg:border-[white] items-center bg-[rgb(214,222,228)] justify-center`}
+        className={`max-w-[100%] z-[50] flex mx-auto box-sizing h-[3.5rem] lg:h-[4.3rem] shadow-md border-b-2 lg:border-[white] items-center bg-[rgb(214,222,228)] justify-center`}
       >
         <div className="w-[1400px] lg:flex justify-around hidden">
           <div
