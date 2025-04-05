@@ -61,12 +61,13 @@ exports.editItemController = async (req, res) => {
     subcategory,
     location,
     ownerId,
-    images,
+    oldImages
   } = req.body;
   const { userId } = req.user;
   const { itemId } = req.params;
+  const images = req.files;
   try {
-    const result = await editItemService(
+    const result = await editItemService({
       title,
       description,
       price,
@@ -75,14 +76,16 @@ exports.editItemController = async (req, res) => {
       location,
       ownerId,
       userId,
-      images,
-      itemId
-    );
+      images:images?.map((file) => file.path),
+      itemId,
+      oldImages
+  });
     res.status(200).json(successResponse(result, "Item Updated successfully"));
   } catch (error) {
+    console.error(error)
     res
       .status(500)
-      .json(errorResponse(error.message || "Internal server error"));
+      .json(errorResponse(error || "Internal server error"));
   }
 };
 

@@ -23,7 +23,7 @@ export default function Home() {
       <div className="w-[100%] mx-auto z-[50] fixed">
         <Navbar />
       </div>
-      <div className="max-w-[1400px] pt-[60px] lg:pt-[75px] mx-auto px-2 sm:px-3">
+      <div className="max-w-[1400px] pt-[65px] lg:pt-[75px] mx-auto px-2 sm:px-3">
         <Header />
         <Items />
         <Steps />

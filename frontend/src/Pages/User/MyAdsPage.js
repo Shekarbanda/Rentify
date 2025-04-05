@@ -47,7 +47,7 @@ export default function MyAdsPage() {
       <div className="w-[100%] mx-auto z-[50] fixed">
         <Navbar />
       </div>
-      <div className="pt-[50px] lg:pt-[72px] mx-auto">
+      <div className="pt-[65px] lg:pt-[72px] mx-auto">
         <Category />
       </div>
       <div className="max-w-[1400px] min-h-[73.5vh] lg:min-h-[77vh] md:min-h-[78.5vh] mx-auto flex-1 flex flex-col p-3 pb-[50px] border border-gray-100">

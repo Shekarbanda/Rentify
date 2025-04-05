@@ -6,7 +6,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "rentify-images", // Cloudinary folder name
-    allowed_formats: ["jpeg", "png", "jpg"],
+    allowed_formats: ["jpeg", "png", "jpg", "webp"],
     limits: { fieldSize: 10000 * 1024 * 1024 }, // 5MB limit
   },
 });

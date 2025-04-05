@@ -4,6 +4,7 @@ const {
   isloginService,
   postItemService,
 } = require("../services/userService");
+const upload = require("../middleware/uploadMiddleware");
 const { errorResponse, successResponse } = require("../utils/responseUtils");
 
 exports.editProfileController = async (req, res) => {
@@ -14,12 +15,12 @@ exports.editProfileController = async (req, res) => {
     location,
     businessName,
     businessAddress,
-    profileImage,
     upi_id,
     password,
     oldPassword
-  } = req.body.profile;
+  } = req.body;
   const { userId } = req.user;
+  const profileImage = req.file ? req.file.path : null;
   try {
     const result = await editProfileService(
       userId,
@@ -76,11 +77,11 @@ exports.postItemController = async (req, res) => {
     subcategory,
     location,
     ownerId,
-    images,
   } = req.body;
   const { userId } = req.user;
+  const images = req.files;
   try {
-    const result = await postItemService(
+    const result = await postItemService({
       title,
       description,
       price,
@@ -89,8 +90,8 @@ exports.postItemController = async (req, res) => {
       location,
       ownerId,
       userId,
-      images
-    );
+      images: images?.map((file) => file.path)
+  });
     res.status(200).json(successResponse(result, "Item added successfully"));
   } catch (error) {
     res

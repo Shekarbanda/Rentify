@@ -37,7 +37,8 @@ const Footer = () => {
   };
 
   useEffect(()=>{
-    if(Date.now()-localStorage.getItem('expiry')>=7200000){
+    if((localStorage.getItem('expiry')) && Date.now()-localStorage.getItem('expiry')>=86400000){
+      window.location.href = "/";
       localStorage.removeItem('token');
       localStorage.removeItem('expiry');
     }

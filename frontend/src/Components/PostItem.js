@@ -57,84 +57,33 @@ export default function PostItem() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-
-    if (formData.images.length + files.length > 5) {
+    const maxImages = 5;
+  
+    // Check total images limit
+    if (formData.images.length + files.length > maxImages) {
+      seterrorMessage(`Cannot add more than ${maxImages} images. Current: ${formData.images.length}, Trying to add: ${files.length}`);
+      // Optional: Add user feedback (e.g., toast)
+      // toast.error(`You can only upload up to ${maxImages} images.`);
       return;
     }
-
-    try {
-      const base64Images = await Promise.all(
-        files.map((file) => setFileToBase(file))
-      );
-      setFormData((prevData) => ({
-        ...prevData,
-        images: [...prevData.images, ...base64Images],
-      }));
-    } catch (error) {
-      console.error(error);
+  
+    // Optional: Validate file types
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    const invalidFiles = files.filter((file) => !allowedTypes.includes(file.type));
+    if (invalidFiles.length > 0) {
+      seterrorMessage("Only JPEG, PNG, and JPG files are allowed:", invalidFiles.map(f => f.name));
+      // Optional: toast.error("Only JPEG, PNG, and JPG files are allowed.");
+      return;
     }
+  
+    // Update state with new images
+    setFormData((prevData) => ({
+      ...prevData,
+      images: [...prevData.images, ...files],
+    }));
   };
-
-  const setFileToBase = (file) => {
-    return new Promise((resolve, reject) => {
-      if (!file) {
-        return reject("No file selected");
-      }
-
-      const maxSize = 6000 * 1024; // 500 KB limit
-
-      if (file.size > maxSize) {
-        seterrorMessage(
-          "File size is too large. Please upload an image smaller than 1MB."
-        );
-        return reject(
-          "File size is too large. Please upload an image smaller than 500KB."
-        );
-      }
-
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-
-      reader.onload = () => {
-        const img = new Image();
-        img.src = reader.result;
-
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
-
-          // Set max width/height to prevent oversized images
-          const maxWidth = 500;
-          const maxHeight = 500;
-          let { width, height } = img;
-
-          if (width > maxWidth || height > maxHeight) {
-            if (width > height) {
-              height *= maxWidth / width;
-              width = maxWidth;
-            } else {
-              width *= maxHeight / height;
-              height = maxHeight;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          ctx.drawImage(img, 0, 0, width, height);
-
-          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7); // 70% quality
-          resolve(compressedBase64);
-        };
-
-        img.onerror = (err) => reject(err);
-      };
-
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
   const handleImageRemove = (index) => {
     const newImages = formData.images.filter((_, i) => i !== index);
     setFormData({ ...formData, images: newImages });
@@ -157,10 +106,25 @@ export default function PostItem() {
       seterrorMessage("Atleast one image should select.");
       return;
     }
+    const newFormData = new FormData();
 
+  // Append the required text fields
+  newFormData.append("category", formData.category);
+  newFormData.append("description", formData.description);
+  newFormData.append("location", formData.location);
+  newFormData.append("price", formData.price);
+  newFormData.append("subcategory", formData.subcategory);
+  newFormData.append("title", formData.title);
+
+  // Append the images array (assuming images is an array of File objects)
+  if (formData.images && formData.images.length > 0) {
+    formData.images.forEach((image, index) => {
+      newFormData.append(`images`, image); // Name each file as images[0], images[1], etc.
+    });
+  }
     setisLoading(true);
     try {
-      const response = await axios.post(`${url}user/post-item`, formData, {
+      const response = await axios.post(`${url}user/post-item`, newFormData, {
         headers: {
           Authorization: `Bearer ${token}`, // Send token in Authorization header
         },

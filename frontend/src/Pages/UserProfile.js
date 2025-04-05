@@ -111,7 +111,7 @@ const RequestsPage = () => {
       <div
         className={`${
           isfromrequest == "request" &&
-          "max-w-[1400px]  mx-auto bg-white flex pt-[80px] shadow-lg border border-[rgba(5,10,27,0.2)]"
+          "max-w-[1400px]  mx-auto bg-white flex pt-[65px] shadow-lg border border-[rgba(5,10,27,0.2)]"
         }`}
       >
         {/* Sidebar / Menu */}
@@ -169,7 +169,7 @@ const RequestsPage = () => {
 
         <div
           className={`flex-1 flex flex-col bg-[rgba(231,235,240,0.29)] pb-10 ${
-            isfromrequest == "request" ? "" : "pt-[70px]"
+            isfromrequest == "request" ? "" : "pt-[65px]"
           }`}
         >
           <div className="overflow-hidden w-full mx-auto min-h-[67vh] lg:min-h-[81vh] md:min-h-[77vh]">

@@ -111,7 +111,7 @@ exports.isloginService = async (userId) => {
   return { user };
 };
 
-exports.postItemService = async (
+exports.postItemService = async ({
   title,
   description,
   price,
@@ -121,7 +121,7 @@ exports.postItemService = async (
   ownerId,
   userId,
   images
-) => {
+}) => {
   let imageUrls = [];
 
   // ✅ Upload each image to Cloudinary if provided

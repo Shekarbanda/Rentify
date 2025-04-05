@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  FaUserEdit,
-  FaCamera,
-} from "react-icons/fa";
+import { FaUserEdit, FaCamera } from "react-icons/fa";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -20,18 +17,17 @@ export default function ProfileComponent() {
   const [errorMessage, seterrorMessage] = useState("");
   const [isLoading, setisLoading] = useState(false);
   const dispatch = useDispatch();
-  const [isLoad,setisLoad] = useState(true);
+  const [isLoad, setisLoad] = useState(true);
 
   const defaultImage =
     "https://icon-library.com/images/download_103236.svg.svg";
 
   useEffect(() => {
-    if(User){
+    if (User) {
       setisLoad(false);
       setrole(User?.role);
       setProfile(User);
-    }
-    else{
+    } else {
       setisLoad(true);
     }
   }, [User]);
@@ -44,67 +40,10 @@ export default function ProfileComponent() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setFileToBase(file);
-  };
-
-  const setFileToBase = (file) => {
-    if (!file) return;
-
-    const maxSize = 6000 * 1024; // 500 KB limit
-
-    // Check file size
-    if (file.size > maxSize) {
-      seterrorMessage(
-        "File size is too large. Please upload an image smaller than 500KB."
-      );
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
-    reader.onloadend = () => {
-      const img = new Image();
-      img.src = reader.result;
-
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-
-        // Set max width/height to prevent oversized images
-        const maxWidth = 500;
-        const maxHeight = 500;
-        let { width, height } = img;
-
-        if (width > maxWidth || height > maxHeight) {
-          if (width > height) {
-            height *= maxWidth / width;
-            width = maxWidth;
-          } else {
-            width *= maxHeight / height;
-            height = maxHeight;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-
-        // Draw image on canvas with new size
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // Convert to Base64 with compression
-        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7); // 70% quality
-
-        setProfile((prevProfile) => ({
-          ...prevProfile,
-          profileImage: compressedBase64,
-        }));
-      };
-    };
-
-    reader.onerror = (error) => {
-      console.error("Error converting file to Base64:", error);
-    };
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      profileImage: file,
+    }));
   };
 
   const handleDiscard = () => {
@@ -115,10 +54,24 @@ export default function ProfileComponent() {
   const handleSave = async (e) => {
     e.preventDefault();
     setisLoading(true);
+    const formData = new FormData();
+    formData.append("userId", profile?._id || ""); // From Redux state
+    formData.append("name", profile?.name || "");
+    formData.append("about", profile?.about || "");
+    formData.append("phone", profile?.phone || "");
+    formData.append("location", profile?.location || "");
+    formData.append("businessName", profile?.businessName || ""); // Only for business role
+    formData.append("businessAddress", profile?.businessAddress || ""); // Only for business role
+
+    // Append profileImage only if it’s a File (not a string URL)
+    if (profile?.profileImage && profile.profileImage instanceof File) {
+      formData.append("profileImage", profile.profileImage);
+    }
+    
     try {
       const response = await axios.post(
         `${url}user/edit-profile`,
-        { profile }, // Send formData directly, NOT wrapped inside an object
+        formData , // Send formData directly, NOT wrapped inside an object
         {
           headers: {
             Authorization: `Bearer ${token}`, // Send token in Authorization header
@@ -129,23 +82,24 @@ export default function ProfileComponent() {
 
       if (response?.status === 200) {
         toast.success("Profile Updated");
-        dispatch(setUser(response?.data?.data?.user))
+        dispatch(setUser(response?.data?.data?.user));
         seterrorMessage("");
         setIsEditing(false);
       }
     } catch (err) {
       seterrorMessage(err?.response?.data?.message);
+      console.log(err)
     } finally {
       setisLoading(false);
     }
   };
 
-  if(isLoad){
+  if (isLoad) {
     return (
       <div className="w-full h-[50vh] flex justify-center items-center">
-        <Spinner/>
+        <Spinner />
       </div>
-    )
+    );
   }
   return (
     <div className="max-w-[1000px] mx-auto p-2 sm:px-8 bg-white shadow-lg rounded-lg mt-5">
@@ -376,7 +330,7 @@ export default function ProfileComponent() {
                 type="email"
                 name="email"
                 readOnly
-                value={!isLoad?profile?.email:"Loading..."}
+                value={!isLoad ? profile?.email : "Loading..."}
                 className="flex-1 w-full items-center border border-[rgba(5,10,27,0.33)]  p-2 rounded-lg mt-1"
               />
             </div>

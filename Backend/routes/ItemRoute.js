@@ -22,10 +22,11 @@ const {
   getWishlistController
 } = require("../controllers/itemController");
 const { authMiddleware } = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware");
 
 router.post("/get-all-items", getAllItemsController);
 router.get("/get-item-details/:itemId", getItemDetailsController);
-router.post("/edit-item/:itemId", authMiddleware, editItemController);
+router.post("/edit-item/:itemId", upload.array('images'), authMiddleware, editItemController);
 router.delete("/delete-item/:itemId", authMiddleware, deleteItemController);
 router.get("/get-user-profile/:userId", getUserProfileController);
 router.get("/get-my-ads", authMiddleware, getMyAdsController);

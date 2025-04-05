@@ -22,11 +22,12 @@ export default function PriceCard({ details, loading }) {
   const [upiId, setUpiId] = useState("");
   const User = useSelector((state) => state.User.value);
   const dispatch = useDispatch();
-  const [load,setload] = useState(true);
+  const [load,setload] = useState(false);
 
   const checkRequestStatus = async () => {
-    setload(true);
+    
     if (islogin) {
+      setload(true);
       try {
         const response = await axios.post(
           `${url}item/${
@@ -254,13 +255,17 @@ export default function PriceCard({ details, loading }) {
           } rounded-md mt-5`}
           onClick={() => (islogin ? handleSubmit() : setIsLoginOpen(true))}
         >
-          {isLoading || load ? (
-            <Spinner />
-          ) : (!reqStatus || reqStatus?.status === "pending") ? (
-            "Cancel Request"
-          ) : (
-            "Send Request"
-          )}
+          {
+            islogin?(
+              isLoading || load ? (
+                <Spinner />
+              ) : (!reqStatus || reqStatus?.status === "pending") ? (
+                "Cancel Request"
+              ) : (
+                "Send Request"
+              )
+            ):"Send Request"
+          }
         </button>
       ) : reqStatus?.status === "completed" ? (
         <p className=" py-1 text-blue-500 rounded pt-3 ml-3">Rent Completed</p>
@@ -279,13 +284,17 @@ export default function PriceCard({ details, loading }) {
           } rounded-md mt-5`}
           onClick={() => (islogin ? handleSubmit() : setIsLoginOpen(true))}
         >
-          {isLoading||load ? (
-            <Spinner />
-          ) : (!reqStatus || reqStatus?.status === "pending") ? (
-            "Cancel Request"
-          ) : (
-            "Send Request"
-          )}
+          {
+            islogin?(
+              isLoading || load ? (
+                <Spinner />
+              ) : (!reqStatus || reqStatus?.status === "pending") ? (
+                "Cancel Request"
+              ) : (
+                "Send Request"
+              )
+            ):"Send Request"
+          }
         </button>
       )}
 

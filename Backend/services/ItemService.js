@@ -51,7 +51,7 @@ exports.getItemDetailsService = async (id) => {
   return { item };
 };
 
-exports.editItemService = async (
+exports.editItemService = async ({
   title,
   description,
   price,
@@ -61,15 +61,16 @@ exports.editItemService = async (
   ownerId,
   userId,
   images,
-  itemId
-) => {
+  itemId,
+  oldImages
+}) => {
   const existingItem = await Item.findById(itemId);
   if (!existingItem) {
     throw new Error("Item not found");
   }
 
   // ✅ Check if images are provided, upload new ones if needed
-  let imageUrls = existingItem.images; // Keep existing images by default
+  let imageUrls = [...oldImages];  // Keep existing images by default
   if (images && images.length > 0) {
     try {
       const uploadPromises = images.map((image) =>
@@ -80,7 +81,8 @@ exports.editItemService = async (
       );
 
       const uploadedResponses = await Promise.all(uploadPromises);
-      imageUrls = uploadedResponses.map((response) => response.secure_url);
+      const newImageUrls = uploadedResponses.map((res) => res.secure_url);
+      imageUrls.push(...newImageUrls);
     } catch (error) {
       console.error("Error uploading images to Cloudinary:", error);
       throw new Error("Image upload failed");

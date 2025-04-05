@@ -182,7 +182,7 @@ export default function ItemDetails() {
         )}
       </div>
       
-      <div className=" mb-5 mx-auto pt-[52px] lg:pt-[70px] ">
+      <div className=" mb-5 mx-auto pt-[65px] lg:pt-[70px] ">
         {isfromrequest !== "/receive-requests" && <Category />}
       </div>
       <BackNavbar />

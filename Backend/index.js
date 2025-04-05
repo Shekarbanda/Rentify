@@ -31,9 +31,6 @@ app.use(
   }),
 )
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-app.use(upload.any());
 app.use(bodyParser.json({ limit: "100mb" })); 
 app.use(bodyParser.urlencoded({ limit: "100mb", extended: true })); 
 

@@ -10,7 +10,7 @@ export default function UserRequestsPage() {
         <Navbar />
       </div>
       <div className=" flex flex-col min-h-screen">
-      <div className="max-w-[1400px] flex-1 flex flex-col pt-[50px] lg:pt-[72px] px-2 p-3 sm:px-5 mx-auto border border-gray-100 pb-[50px]">
+      <div className="max-w-[1400px] flex-1 flex flex-col pt-[65px] lg:pt-[72px] px-2 p-3 sm:px-5 mx-auto border border-gray-100 pb-[50px]">
         <RequestsComponent />
       </div>
       <Footer />

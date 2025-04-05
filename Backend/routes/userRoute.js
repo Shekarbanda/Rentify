@@ -8,12 +8,12 @@ const {
   postItemController,
 } = require("../controllers/userController");
 
-router.post("/edit-profile", editProfileController);
+router.post("/edit-profile",upload.single('profileImage'), editProfileController);
 
 router.post("/logout", logoutController);
 
 router.post("/islogin", isloginController);
 
-router.post("/post-item", postItemController);
+router.post("/post-item", upload.array('images',5) , postItemController);
 
 module.exports = router;
