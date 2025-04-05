@@ -65,6 +65,7 @@ const Login = ({ isOpen, onClose }) => {
         });
         if (response?.status === 200) {
           localStorage.setItem("token", response?.data?.data?.token);
+          localStorage.setItem('expiry',Date.now());
           dispatch(setUser(response?.data?.data?.user));
           const redirectPath = localStorage.getItem("redirectPath") || "/";
           localStorage.removeItem("redirectPath");
@@ -100,6 +101,7 @@ const Login = ({ isOpen, onClose }) => {
         });
         if (response?.status === 200) {
           localStorage.setItem("token", response?.data?.data?.token);
+          localStorage.setItem('expiry',Date.now());
           dispatch(setUser(response?.data?.data?.user));
           const redirectPath = localStorage.getItem("redirectPath") || "/";
           localStorage.removeItem("redirectPath");
@@ -128,7 +130,7 @@ const Login = ({ isOpen, onClose }) => {
   return (
     <div
       id="modal-overlay"
-      className="fixed inset-0 bg-black bg-opacity-50 flex px-2 md:px-0 justify-center items-center z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex px-3 md:px-0 justify-center items-center z-50"
       onClick={handleClose}
     >
       <div
@@ -141,7 +143,7 @@ const Login = ({ isOpen, onClose }) => {
             setisloginForm(true);
             onClose();
           }}
-          className="absolute top-3 right-3 text-gray-500 hover:text-black text-3xl"
+          className="absolute top-3 right-3 text-gray-500 hover:text-black text-2xl lg:text-3xl"
         >
           <RxCross2 />
         </button>
@@ -149,7 +151,7 @@ const Login = ({ isOpen, onClose }) => {
           onSubmit={handleSubmit}
           className="p-4 max-w-[1400px] mx-auto flex flex-col justify-center"
         >
-          <h1 className="text-4xl font-bold text-center mb-7">
+          <h1 className="lg:text-3xl text-xl font-bold text-center mb-7">
             {isloginForm ? "Welcome to Rentify" : "Sign Up"}
           </h1>
           <div className="flex flex-col gap-5 mb-3">

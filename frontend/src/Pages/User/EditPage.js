@@ -10,7 +10,7 @@ export default function EditPostPage() {
         <Navbar />
       </div>
       <div className=" flex flex-col min-h-screen">
-      <div className="max-w-[1400px]  flex-1 flex flex-col pt-[80px] mx-auto  pb-[50px] ">
+      <div className="max-w-[1400px]  flex-1 flex flex-col pt-[50px] lg:pt-[72px] mx-auto  pb-[50px] ">
         <EditItem />
       </div>
       <Footer />

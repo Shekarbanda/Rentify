@@ -35,13 +35,13 @@ export default function AddItem() {
 
   return (
     <>
-      <div className="w-[100%] lg:z-50  fixed bg-[rgb(214,222,228)]">
+      <div className="w-[100%] lg:z-50 h-[3.2rem] lg:h-[4.3rem] fixed bg-[rgb(214,222,228)]">
         <div
-          className={`max-w-[1400px] z-[50] flex mx-auto  box-sizing h-[5rem] border-b-2 items-center `}
+          className={`max-w-[1400px] z-[50] flex mx-auto  box-sizing h-[3.2rem] lg:h-[4.3rem] border-b-2 items-center `}
         >
-          <div className="w-[1400px] flex justify-between items-center h-[5rem]">
-            <div className="flex items-center h-[5rem] mt-3 text-[1.5rem] font-bold ml-6 cursor-pointer">
-              <span className="bg-[black] p-1 mb-2 rounded-lg text-[white]">
+          <div className="w-[1400px] flex justify-between items-center ">
+            <div className="flex items-center h-[3.2rem] lg:h-[4.3rem] text-[1rem] lg:text-[1.5rem] font-bold ml-6 cursor-pointer">
+              <span className="bg-[black] p-1  rounded-lg text-[white]">
                 Rent
               </span>{" "}
               <span className="">Ify</span>
@@ -64,8 +64,11 @@ export default function AddItem() {
                       />
                     ) : (
                       <FaUserCircle className="w-9 h-9" />
-                    )}{" "}
-                    <span className="ml-1 mr-1">{ User?.name}</span>
+                    )}
+                    <span className="ml-1 mr-1">
+                      {User?.name?.charAt(0)?.toUpperCase() +
+                        User?.name?.slice(1)}
+                    </span>
                     <IoIosArrowDown
                       className={`w-5 h-5 ml-1 transform transition-transform duration-300 ${
                         isOpen ? "rotate-180" : "rotate-0"
@@ -85,7 +88,7 @@ export default function AddItem() {
                           ) : (
                             <FaUserCircle className="w-9 h-9" />
                           )}
-                          <span className="ml-1 mr-1">{ User?.name}</span>
+                          <span className="ml-1 mr-1">{User?.name}</span>
                         </div>
                         <button
                           className="px-4 py-2 mt-2 mb-5  bg-[#002f34] mx-auto text-white w-[90%] h-[2.5rem] bg-[#002f34] rounded-sm cursor-pointer"
@@ -114,13 +117,14 @@ export default function AddItem() {
                 Logout
               </button>
             </div>
+
             <div
               className={`h-[6rem] items-center mr-6 ${
                 menuOpen ? "hidden" : "flex"
               } lg:hidden ease-in-out transition-h duration-500 cursor-pointer`}
               onClick={() => setMenuOpen(true)}
             >
-              <RiMenu2Line className="w-[50px] h-[50px]" />
+              <RiMenu2Line className="lg:w-[50px] lg:h-[50px] w-[25px] h-[25px]" />
             </div>
             <div
               className={`h-[6rem] items-center mr-6 ${
@@ -128,13 +132,13 @@ export default function AddItem() {
               } lg:hidden ease-in-out transition-all duration-500 cursor-pointer`}
               onClick={() => setMenuOpen(false)}
             >
-              <RxCross2 className="w-[50px] h-[50px]" />
+              <RxCross2 className="lg:w-[50px] lg:h-[50px] w-[25px] h-[25px]" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className=" max-w-[1400px]  mx-auto bg-white flex pt-[80px] shadow-lg border border-[rgba(5,10,27,0.2)]">
+      <div className=" max-w-[1400px]  mx-auto bg-white flex pt-[50px] lg:pt-[72px] shadow-lg border border-[rgba(5,10,27,0.2)]">
         {/* Sidebar / Menu */}
         <div
           className={`fixed lg:static inset-y-0 left-0 sm:w-64 w-60 bg-white shadow-lg lg:shadow-none p-4 space-y-4 transform ${

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { setItems, setLoad } from "../Redux/Slices/ItemSlice";
 import axios from "axios";
+import Spinner from "./Spinner";
 
 export default function Dashboard() {
   const myAds = useSelector((state) => state.Item.value);
@@ -84,15 +85,15 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               <div className="p-4 bg-green-200 rounded-lg shadow-lg">
                 <h3 className="text-lg font-bold">Total Items</h3>
-                <p className="text-3xl">{myAds?.length}</p>
+                <p className="text-3xl">{requests?myAds.length:<Spinner/>}</p>
               </div>
 
               <div className="p-4 bg-yellow-200 rounded-lg shadow-lg">
                 <h3 className="text-lg font-bold">Pending Requests</h3>
                 <p className="text-3xl">
                   {
-                    requests?.filter((request) => request.status === "pending")
-                      .length
+                    requests?requests.filter((request) => request.status === "pending")
+                      .length:<Spinner/>
                   }
                 </p>
               </div>
@@ -100,9 +101,9 @@ export default function Dashboard() {
                 <h3 className="text-lg font-bold">Completed Rents</h3>
                 <p className="text-3xl">
                   {
-                    requests?.filter(
+                    requests?requests.filter(
                       (request) => request.status === "completed"
-                    ).length
+                    ).length:<Spinner/>
                   }
                 </p>
               </div>

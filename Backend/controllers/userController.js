@@ -36,6 +36,7 @@ exports.editProfileController = async (req, res) => {
     );
     res.status(200).json(successResponse(result, "Profile Updated successful"));
   } catch (error) {
+    console.error(error)
     res
       .status(500)
       .json(errorResponse(error.message || "Internal server error"));

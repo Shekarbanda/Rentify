@@ -57,7 +57,12 @@ export default function Navbar() {
       );
       dispatch(setUser(response?.data?.data?.user));
     } catch (err) {
-      console.error(err);
+      if(err?.response?.data?.message==='Invalid or expired token'){
+        setislogin(false)
+        dispatch(setUser({}));
+        localStorage.removeItem('token');
+        localStorage.removeItem('expiry');
+      }
     }
   };
 
@@ -66,6 +71,9 @@ export default function Navbar() {
       const decoded = jwtDecode(localStorage.getItem("token"));
       fetch();
       setislogin(true);
+    }
+    else{
+      setislogin(false)
     }
   }, [localStorage.getItem("token")]);
 
@@ -83,65 +91,83 @@ export default function Navbar() {
     if (islogin) {
       switch (menu) {
         case "view-profile":
+          dispatch(setSearch(""));
           nav("/user-profile");
           break;
         case "add-item":
+          dispatch(setSearch(""));
           nav("/post");
           break;
         case "my-ads":
+          dispatch(setSearch(""));
           nav("/myads");
           break;
         case "wishlist":
+          dispatch(setSearch(""));
           nav("/wishlist");
           break;
         case "received":
+          dispatch(setSearch(""));
           nav("/receive-requests");
           break;
         case "sent":
+          dispatch(setSearch(""));
           nav("/sent-requests");
           break;
         case "settings":
+          dispatch(setSearch(""));
           nav("/settings");
           break;
           case "help":
+            dispatch(setSearch(""));
             nav("/help");
             break;
         default:
+          dispatch(setSearch(""));
           nav("/");
       }
     } else {
       switch (menu) {
         case "view-profile":
+          dispatch(setSearch(""));
           localStorage.setItem("redirectPath", "/user-profile");
           setIsLoginOpen(true);
           break;
         case "add-item":
+          dispatch(setSearch(""));
           localStorage.setItem("redirectPath", "/post");
           setIsLoginOpen(true);
           break;
         case "my-ads":
+          dispatch(setSearch(""));
           localStorage.setItem("redirectPath", "/myads");
           setIsLoginOpen(true);
           break;
         case "settings":
+          dispatch(setSearch(""));
           nav("/settings");
           break;
           case "help":
+            dispatch(setSearch(""));
             nav("/help");
             break;
         case "wishlist":
+          dispatch(setSearch(""));
           localStorage.setItem("redirectPath", "/wishlist");
           setIsLoginOpen(true);
           break;
         case "received":
+          dispatch(setSearch(""));
           localStorage.setItem("redirectPath", "/requests");
           setIsLoginOpen(true);
           break;
         case "sent":
+          dispatch(setSearch(""));
           localStorage.setItem("redirectPath", "/sent-requests");
           setIsLoginOpen(true);
           break;
         default:
+          dispatch(setSearch(""));
           nav("/");
       }
     }
@@ -150,6 +176,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     setisLoading(true);
     localStorage.removeItem("token");
+    localStorage.removeItem('expiry');
     window.location.href = "/";
     toast.success("Logged out successfully");
     setisLoading(false);
@@ -158,11 +185,11 @@ export default function Navbar() {
   return (
     <>
       <div
-        className={`max-w-[100%] z-[50] flex mx-auto box-sizing h-[5rem] shadow-md border-b-2 lg:border-[white] items-center bg-[rgb(214,222,228)] justify-center`}
+        className={`max-w-[100%] z-[50] flex mx-auto box-sizing h-[3.2rem] lg:h-[4.3rem] shadow-md border-b-2 lg:border-[white] items-center bg-[rgb(214,222,228)] justify-center`}
       >
         <div className="w-[1400px] lg:flex justify-around hidden">
           <div
-            className="cursor-pointer flex items-center h-[5rem] text-[1.5rem] font-bold"
+            className="cursor-pointer flex items-center h-[3.2rem] lg:h-[4.3rem] text-[1rem] lg:text-[1.5rem] font-bold"
             onClick={() => nav("/")}
           >
             <span className="bg-[black] p-1 rounded-lg text-[white]">Rent</span>{" "}
@@ -170,7 +197,7 @@ export default function Navbar() {
           </div>
 
           <>
-            <div className="flex items-center h-[5rem]">
+            <div className="flex items-center h-[3.2rem] lg:h-[4.3rem]">
               <select
                 name="location"
                 value={location}
@@ -183,7 +210,7 @@ export default function Navbar() {
               </select>
             </div>
 
-            <div className="flex items-center h-[5rem] ">
+            <div className="flex items-center h-[3.2rem] lg:h-[4.3rem] ">
               <input
                 type="text"
                 onChange={(e) => dispatch(setSearch(e.target.value))}
@@ -197,13 +224,13 @@ export default function Navbar() {
               </div>
             </div>
             <div
-              className="w-[35px] flex items-center h-[5rem] cursor-pointer ml-1"
+              className="w-[35px] flex items-center h-[3.2rem] lg:h-[4.3rem] cursor-pointer ml-1"
               onClick={() => handleMenuClick("wishlist")}
             >
               <GrFavorite className="w-[80px] h-[40px] p-1 hover:bg-[pink] hover:rounded-full" />
             </div>
 
-            <div className="flex items-center h-[5rem]">
+            <div className="flex items-center h-[3.2rem] lg:h-[4.3rem]">
               <button
                 className={`sm:px-3 text-lg rounded text-primary sm:py-2 hover:text-[white] hover:bg-[black] transition-all duration-200 ${
                   islogin ? "hidden" : ""
@@ -215,7 +242,7 @@ export default function Navbar() {
                 Register
               </button>
             </div>
-            <div className="flex items-center h-[5rem]">
+            <div className="flex items-center h-[3.2rem] lg:h-[4.3rem]">
               <button
                 className={`sm:px-3 text-lg rounded text-primary sm:py-2 hover:text-[white] hover:bg-[black] transition-all duration-200 ${
                   islogin ? "hidden" : ""
@@ -227,7 +254,7 @@ export default function Navbar() {
                 Login
               </button>
             </div>
-            <div className="flex items-center h-[5rem]">
+            <div className="flex items-center h-[3.2rem] lg:h-[4.3rem]">
               <button
                 className={`sm:px-3 text-lg rounded text-primary sm:py-2 hover:text-[white] hover:bg-[black] transition-all duration-200 ${
                   islogin ? "" : "hidden"
@@ -262,7 +289,7 @@ export default function Navbar() {
                   ) : (
                     <FaUserCircle className="w-9 h-9" />
                   )}{" "}
-                  <span className="ml-1 mr-1">{islogin ? User?.name : ""}</span>
+                  <span className="ml-1 mr-1">{islogin ?User?.name : ""}</span>
                   <IoIosArrowDown
                     className={`w-5 h-5 transform transition-transform duration-300 ${
                       isOpen ? "rotate-180" : "rotate-0"
@@ -282,10 +309,10 @@ export default function Navbar() {
                         ) : (
                           <FaUserCircle className="w-9 h-9" />
                         )}
-                        {islogin ? User?.name : "Welcome to Rentify!"}
+                        {islogin? User?.name?.charAt(0)?.toUpperCase() +User?.name?.slice(1) : "Welcome to Rentify!"}
                       </div>
                       <button
-                        className="px-4 py-2 mt-2 mb-5  bg-[#002f34] mx-auto text-white w-[90%] h-[2.5rem] bg-[#002f34] rounded-sm cursor-pointer"
+                        className="px-3 py-2 mt-2 mb-5 font-semibold bg-[#002f34] mx-auto text-white w-[90%] h-[2.5rem] bg-[#002f34] rounded-sm cursor-pointer"
                         onClick={() => handleMenuClick("view-profile")}
                       >
                         {islogin ? "View and edit profile" : "Login"}{" "}
@@ -376,7 +403,7 @@ export default function Navbar() {
         </div>
         <div className="w-[1500px] flex justify-between lg:hidden">
           <div
-            className="flex items-center h-[5rem] mt-3 text-[1.5rem] font-bold ml-6 cursor-pointer"
+            className="flex items-center h-[3.2rem] lg:h-[4.3rem] text-[1rem] lg:text-[1.5rem] font-bold ml-6 cursor-pointer"
             onClick={() => nav("/")}
           >
             <span className="bg-[black] p-1  rounded-lg text-[white]">
@@ -385,20 +412,20 @@ export default function Navbar() {
             <span className="">Ify</span>
           </div>
           <div
-            className={`h-[6rem] items-center mr-6 ${
+            className={`items-center mr-6 ${
               mobile ? "hidden" : "flex"
             } ease-in-out transition-h duration-500 cursor-pointer`}
             onClick={() => setmobile(true)}
           >
-            <RiMenu2Line className="w-[50px] h-[50px]" />
+            <RiMenu2Line className="lg:w-[50px] lg:h-[50px] w-[25px] h-[25px]" />
           </div>
           <div
-            className={`h-[6rem] items-center mr-6 ${
+            className={`items-center mr-6 ${
               mobile ? "flex" : "hidden"
             } ease-in-out transition-all duration-500 cursor-pointer`}
             onClick={() => setmobile(false)}
           >
-            <RxCross2 className="w-[50px] h-[50px]" />
+            <RxCross2 className="lg:w-[50px] lg:h-[50px] w-[25px] h-[25px]" />
           </div>
         </div>
       </div>
@@ -416,12 +443,12 @@ export default function Navbar() {
             )}
             <div className="flex flex-col w-[80%]">
               <h1 className="text-[1.3rem] font-bold">
-                {islogin ? User?.name : "Welcome to Rentify!"}
+              {islogin? User?.name?.charAt(0)?.toUpperCase() +User?.name?.slice(1) : "Welcome to Rentify!"}
               </h1>
              
               {islogin ? (
                 <button
-                  className="text-white w-[90%] h-[2.5rem] bg-[#002f34] rounded-sm mt-4"
+                  className="text-white w-[90%] h-[2.2rem] font-semibold bg-[#002f34] rounded-sm mt-4"
                   onClick={() => handleMenuClick("view-profile")}
                 >
                   View and edit profile
@@ -429,13 +456,13 @@ export default function Navbar() {
               ) : (
                 <>
                   <button
-                    className="text-white w-[90%] h-[2.5rem] bg-[#002f34] rounded-sm mt-4"
+                    className="text-white w-[90%] h-[2.2rem] font-semibold bg-[#002f34] rounded-sm mt-4"
                     onClick={() => setIsLoginOpen(true)}
                   >
                     Login
                   </button>
                   <button
-                    className="text-white w-[90%] h-[2.5rem] bg-[#002f34] rounded-sm mt-2 mb-2"
+                    className="text-white w-[90%] h-[2.2rem] font-semibold bg-[#002f34] rounded-sm mt-2 mb-2"
                     onClick={() => setIsSignupOpen(true)}
                   >
                     Register
@@ -444,9 +471,9 @@ export default function Navbar() {
               )}
             </div>
           </div>
-          <div className="w-full flex flex-col text-[1.3rem] border-b border-[#002f34]">
+          <div className="w-full flex flex-col text-[1.1rem] border-b border-[#002f34]">
             <button
-              className="h-[3.5rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)]"
+              className="h-[3.2rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)]"
               onClick={() => handleMenuClick("add-item")}
             >
               <span>
@@ -455,23 +482,23 @@ export default function Navbar() {
               Add Item
             </button>
             <button
-              className="h-[3.5rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)]"
+              className="h-[3.2rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)]"
               onClick={() => handleMenuClick("my-ads")}
             >
               <LuClipboardList className="inline mr-3" /> My ADS
             </button>
             {islogin && (
-                        <li
-                          className="px-4 py-2 hover:bg-[rgb(123,194,217)] cursor-pointer flex items-center justify-between"
+                        <button
+                          className="h-[3.2rem] w-full mt-1 p-4 pb-2 hover:bg-[rgb(123,194,217)] cursor-pointer flex items-center justify-between"
                           onClick={toggleRequestDropdown}
                         >
-                          <FaClock className="mr-2" /> Requests
+                          <FaClock className="mr-4 inline" /> Requests
                           <IoIosArrowDown
                             className={`ml-auto ${
                               requestDropdownOpen ? "rotate-180" : ""
                             }`}
                           />
-                        </li>
+                        </button>
                       )}
 
                       {requestDropdownOpen && (
@@ -491,7 +518,7 @@ export default function Navbar() {
                         </ul>
                       )}
             <button
-              className="h-[3.5rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)]"
+              className="h-[3.2rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)]"
               onClick={() => handleMenuClick("wishlist")}
             >
               <GrFavorite className="inline mr-3" /> Wishlist
@@ -499,7 +526,7 @@ export default function Navbar() {
             {islogin && (
               <>
                 <button
-                  className="h-[3.5rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)]"
+                  className="h-[3.2rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)]"
                   onClick={() => handleMenuClick("settings")}
                 >
                   <FaCog className="inline mr-3" /> Settings
@@ -507,14 +534,14 @@ export default function Navbar() {
               </>
             )}
             <button
-              className="h-[3.5rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)]"
+              className="h-[3.2rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)]"
               onClick={() => handleMenuClick("help")}
             >
               <FaQuestion className="inline mr-3" /> Help
             </button>
             <button
               onClick={handleLogout}
-              className={`h-[3.5rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)] ${
+              className={`h-[3.2rem] w-full text-left p-4 hover:bg-[rgb(123,194,217)] ${
                 islogin ? "" : "hidden"
               }`}
             >

@@ -46,12 +46,12 @@ const Details = () => {
   }, [url]);
 
   const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % otherImages.length);
+    setActiveIndex((prev) => (prev + 1) % itemDetails?.images?.length);
   };
 
   const handlePrev = () => {
     setActiveIndex(
-      (prev) => (prev - 1 + otherImages.length) % otherImages.length
+      (prev) => (prev - 1 + itemDetails?.images?.length) % itemDetails?.images?.length
     );
   };
 
@@ -78,7 +78,7 @@ const Details = () => {
             alt="skeleton image1"
           />
           <div className="flex gap-2">
-            {otherImages?.map((img, index) => (
+            {itemDetails?.images?.map((img, index) => (
               <img
                 key={index}
                 src={SkeletonSVG}

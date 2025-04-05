@@ -3,11 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../Redux/Slices/UserSlice";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 const Footer = () => {
   const url = useSelector((state) => state.api.value);
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const fetch = async () => {
     try {
@@ -23,20 +25,36 @@ const Footer = () => {
       );
       dispatch(setUser(response?.data?.data?.user));
     } catch (err) {
-      console.error(err);
+      
+      if(err?.response?.data?.message==='Invalid or expired token'){
+        toast.error("Invalid or expired token");
+        dispatch(setUser({}));
+        localStorage.removeItem('token');
+        localStorage.removeItem('expiry');
+        navigate('/')
+      }
     }
   };
+
+  useEffect(()=>{
+    if(Date.now()-localStorage.getItem('expiry')>=7200000){
+      localStorage.removeItem('token');
+      localStorage.removeItem('expiry');
+    }
+  },[])
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
       fetch();
     }
+
   }, [localStorage.getItem("token")]);
+
   return (
     <footer className="bg-white w-100 mt-[50px]  dark:bg-gray-800 mt-auto">
       <div className="w-full mx-auto max-w-7xl p-4 py-6 lg:py-8">
         <div className="md:flex md:justify-between">
-          <div className="cursor-pointer flex items-center h-[5.5rem] text-[2rem] font-bold">
+          <div className="cursor-pointer flex items-center h-[3.5rem] mb-2 mr-5 lg:h-[4.3rem] lg:text-[2rem] text-[1.3rem] font-bold">
             <span className="bg-[black] p-1 rounded-lg text-[white]">Rent</span>{" "}
             <span className="text-[rgba(174,184,184,0.66)]">Ify</span>
           </div>

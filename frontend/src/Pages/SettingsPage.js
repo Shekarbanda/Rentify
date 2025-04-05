@@ -6,6 +6,7 @@ import axios from "axios";
 import Navbar from "../Components/Navbar";
 import Category from "../Components/Category";
 import Footer from "../Components/Footer";
+import Spinner from "../Components/Spinner";
 
 const SettingsPage = () => {
   const User = useSelector((state) => state.User.value);
@@ -44,21 +45,14 @@ const SettingsPage = () => {
   }, []);
   // ✅ Handle UPI ID Update
   const handleUpiUpdate = async () => {
+    
     if (!upiId.match(/^\w+@\w+$/)) {
       toast.error("❌ Invalid UPI ID format!");
       return;
     }
-
-    await handleSave();
-    toast.success("✅ UPI ID updated successfully!");
-  };
-
-  const handleSave = async () => {
-    setisLoading(true);
+    setisLoading('upi');
     const profile = {
-      upi_id: upiId,
-      password: newPassword,
-      oldPassword: oldPassword,
+      upi_id:upiId
     };
     try {
       const response = await axios.post(
@@ -73,22 +67,26 @@ const SettingsPage = () => {
       );
 
       if (response?.status === 200) {
+        toast.success("✅ UPI ID updated successfully!");
         dispatch(setUser(response?.data?.data?.user));
         seterrorMessage("");
-        toast.success("Updated Successfully");
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
       }
     } catch (err) {
+      toast.error("Failed to update")
       seterrorMessage(err?.response?.data?.message);
     } finally {
       setisLoading(false);
+      seterrorMessage("");
     }
+    
   };
 
   // ✅ Handle Password Change
   const handlePasswordChange = async () => {
+    
     if (!oldPassword || !newPassword || !confirmPassword) {
       seterrorMessage("All fields are required!");
       return;
@@ -101,7 +99,38 @@ const SettingsPage = () => {
       seterrorMessage("Password must be at least 6 characters long!");
       return;
     }
-    await handleSave();
+    const profile = {
+      password: newPassword,
+      oldPassword: oldPassword,
+    };
+    setisLoading('pass');
+    try {
+      const response = await axios.post(
+        `${url}user/edit-profile`,
+        { profile }, // Send formData directly, NOT wrapped inside an object
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token in Authorization header
+            "Content-Type": "multipart/form-data", // Correct content type for file uploads
+          },
+        }
+      );
+
+      if (response?.status === 200) {
+        dispatch(setUser(response?.data?.data?.user));
+        toast.success("✅ Password updated successfully")
+        seterrorMessage("");
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    } catch (err) {
+      seterrorMessage(err?.response?.data?.message);
+    } finally {
+      setisLoading(false);
+      
+    }
+    
   };
 
   return (
@@ -109,7 +138,7 @@ const SettingsPage = () => {
       <div className="w-[100%] mx-auto z-[50] fixed">
         <Navbar />
       </div>
-      <div className="pt-[80px] mx-auto">
+      <div className="pt-[50px] lg:pt-[72px] mx-auto">
         <Category />
       </div>
       <div className="min-h-[73.5vh] lg:min-h-[77vh] md:min-h-[78.5vh] flex flex-col items-center justify-center p-4 mb-5">
@@ -136,7 +165,7 @@ const SettingsPage = () => {
                 onClick={handleUpiUpdate}
                 className="mt-3 p-2 w-full bg-[#002f34] text-white rounded-md mt-5 border-2"
               >
-                Update UPI ID
+                {isLoading==='upi'?<Spinner/>:"Update UPI ID"}
               </button>
             </div>
 
@@ -186,7 +215,7 @@ const SettingsPage = () => {
                 onClick={handlePasswordChange}
                 className="mt-3 p-2 w-full bg-[#002f34] text-white rounded-md mt-5 border-2"
               >
-                Change Password
+                {isLoading==='pass'?<Spinner/>:"Change Password"}
               </button>
             </div>
           </divContent>

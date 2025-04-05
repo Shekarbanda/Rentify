@@ -22,8 +22,10 @@ export default function PriceCard({ details, loading }) {
   const [upiId, setUpiId] = useState("");
   const User = useSelector((state) => state.User.value);
   const dispatch = useDispatch();
+  const [load,setload] = useState(true);
 
   const checkRequestStatus = async () => {
+    setload(true);
     if (islogin) {
       try {
         const response = await axios.post(
@@ -46,6 +48,9 @@ export default function PriceCard({ details, loading }) {
         }
       } catch (error) {
         console.error("Error checking request status:", error);
+      }
+      finally{
+          setload(false);
       }
     }
   };
@@ -162,6 +167,7 @@ export default function PriceCard({ details, loading }) {
         setisLoading(false);
       }
     } else {
+      setisLoading(true);
       try {
         const response = await axios.post(
           `${url}item/send-request`,
@@ -248,9 +254,9 @@ export default function PriceCard({ details, loading }) {
           } rounded-md mt-5`}
           onClick={() => (islogin ? handleSubmit() : setIsLoginOpen(true))}
         >
-          {isLoading ? (
+          {isLoading || load ? (
             <Spinner />
-          ) : reqStatus?.status === "pending" ? (
+          ) : (!reqStatus || reqStatus?.status === "pending") ? (
             "Cancel Request"
           ) : (
             "Send Request"
@@ -273,9 +279,9 @@ export default function PriceCard({ details, loading }) {
           } rounded-md mt-5`}
           onClick={() => (islogin ? handleSubmit() : setIsLoginOpen(true))}
         >
-          {isLoading ? (
+          {isLoading||load ? (
             <Spinner />
-          ) : reqStatus?.status === "pending" ? (
+          ) : (!reqStatus || reqStatus?.status === "pending") ? (
             "Cancel Request"
           ) : (
             "Send Request"

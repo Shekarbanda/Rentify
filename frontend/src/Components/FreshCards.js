@@ -42,7 +42,6 @@ export default function FreshCards({ iswishlist }) {
           }
         );
         if (response.status === 200) {
-          console.log(response?.data?.data?.wishlist)
           const items = response?.data?.data?.wishlist || [];
           dispatch(setWishlist(items));
           setCardCount(Math.min(12, items.length)); // Start with at most 12 items

@@ -9,7 +9,7 @@ const HelpPage = () => {
       <div className="w-[100%] mx-auto z-[50] fixed">
         <Navbar />
       </div>
-      <div className="pt-[80px] mx-auto">
+      <div className="pt-[50px] lg:pt-[72px] mx-auto">
               <Category />
             </div>
       <div className="max-w-[1400px] min-h-[73.5vh] lg:min-h-[77vh] md:min-h-[78.5vh] mx-auto p-6  space-y-6 mb-5">

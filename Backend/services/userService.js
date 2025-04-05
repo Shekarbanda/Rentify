@@ -48,8 +48,17 @@ exports.editProfileService = async (
     if (!isPasswordValid) {
       throw new Error("old password is incorrect");
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const updateFields = {
+      password: hashedPassword,
+    };
+    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
+      new: true,
+      runValidators: true,
+    });
+    return { user: updatedUser };
   }
-  const hashedPassword = await bcrypt.hash(password, 10);
+  
 
   let profileImageUrl = existingUser.profileImage; // Keep existing image if not provided
 
@@ -71,7 +80,6 @@ exports.editProfileService = async (
     businessName,
     businessAddress,
     upi_id,
-    password: hashedPassword,
   };
   if (profileImageUrl) updateFields.profileImage = profileImageUrl;
 

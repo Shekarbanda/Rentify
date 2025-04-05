@@ -185,7 +185,7 @@ export default function PostItem() {
 
   return (
     <div className="max-w-4xl mx-auto p-3 rounded-lg border border-gray-100">
-      <h2 className="text-3xl font-semibold mb-4 text-center py-3 border-b border-[rgba(91,92,96,0.2)]">
+      <h2 className="text-xl lg:text-3xl font-semibold mb-4 text-center py-3 border-b border-[rgba(91,92,96,0.2)]">
         {item ? "EDIT ITEM" : "POST YOUR ADD"}
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">

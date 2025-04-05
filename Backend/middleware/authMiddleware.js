@@ -25,6 +25,9 @@ exports.authMiddleware = (req, res, next) => {
       .status(401)
       .json(errorResponse('Token must be prefixed with "Bearer"'));
   }
+  if (!token || token.split('.').length !== 3) {
+    return res.status(403).json(errorResponse("Malformed token"));
+  }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {

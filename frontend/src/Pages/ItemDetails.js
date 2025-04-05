@@ -43,14 +43,14 @@ export default function ItemDetails() {
 
   return (
     <>
-      <div className="w-[100%] mx-auto z-[50] fixed ">
+      <div className="w-full z-[50] fixed ">
         {isfromrequest === "/receive-requests" ? (
           <>
-            <div className="max-w-[1400px] lg:z-50  fixed bg-[rgb(214,222,228)]">
+            <div className="w-full lg:z-50 mx-auto fixed bg-[rgb(214,222,228)]">
               <div
-                className={`w-[1400px] z-[50] flex mx-auto  box-sizing h-[5rem] border-b-2 items-center `}
+                className={`max-w-[1400px] z-[50] flex mx-auto  box-sizing h-[5rem] border-b-2 items-center `}
               >
-                <div className="flex justify-between items-center h-[5rem]">
+                <div className="flex w-[1400px] justify-between items-center h-[5rem]">
                   <div className="flex items-center h-[5rem] mt-3 text-[2rem] font-bold ml-6 cursor-pointer">
                     <span className="bg-[black] p-1 mb-2 rounded-lg text-[white]">
                       Rent
@@ -182,7 +182,7 @@ export default function ItemDetails() {
         )}
       </div>
       
-      <div className=" mb-5 mx-auto pt-[88px] ">
+      <div className=" mb-5 mx-auto pt-[52px] lg:pt-[70px] ">
         {isfromrequest !== "/receive-requests" && <Category />}
       </div>
       <BackNavbar />

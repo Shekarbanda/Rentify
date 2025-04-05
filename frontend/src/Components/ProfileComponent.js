@@ -20,13 +20,20 @@ export default function ProfileComponent() {
   const [errorMessage, seterrorMessage] = useState("");
   const [isLoading, setisLoading] = useState(false);
   const dispatch = useDispatch();
+  const [isLoad,setisLoad] = useState(true);
 
   const defaultImage =
     "https://icon-library.com/images/download_103236.svg.svg";
 
   useEffect(() => {
-    setrole(User?.role);
-    setProfile(User);
+    if(User){
+      setisLoad(false);
+      setrole(User?.role);
+      setProfile(User);
+    }
+    else{
+      setisLoad(true);
+    }
   }, [User]);
 
   const handleEditToggle = () => setIsEditing(!isEditing);
@@ -133,11 +140,18 @@ export default function ProfileComponent() {
     }
   };
 
+  if(isLoad){
+    return (
+      <div className="w-full h-[50vh] flex justify-center items-center">
+        <Spinner/>
+      </div>
+    )
+  }
   return (
     <div className="max-w-[1000px] mx-auto p-2 sm:px-8 bg-white shadow-lg rounded-lg mt-5">
       {!isEditing ? (
         <div className="lg:w-[750px] w-[300px] sm:w-[500px]">
-          <h2 className=" text-3xl   font-semibold mb-4 border-b border-[rgba(91,92,96,0.2)] py-3 text-center">
+          <h2 className=" text-xl lg:text-3xl   font-semibold mb-4 border-b border-[rgba(91,92,96,0.2)] py-3 text-center">
             PROFILE
           </h2>
           <div className="md:w-[150px] md:h-[150px] w-[110px] h-[110px] rounded-full bg-gray-200 mx-auto mb-2 flex justify-center items-center">
@@ -362,7 +376,7 @@ export default function ProfileComponent() {
                 type="email"
                 name="email"
                 readOnly
-                value={profile?.email}
+                value={!isLoad?profile?.email:"Loading..."}
                 className="flex-1 w-full items-center border border-[rgba(5,10,27,0.33)]  p-2 rounded-lg mt-1"
               />
             </div>

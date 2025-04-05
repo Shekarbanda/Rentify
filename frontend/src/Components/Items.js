@@ -2,15 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Card from "./Card";
 import { useNavigate } from "react-router";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { setWishlist } from "../Redux/Slices/ItemSlice";
 
 const Items = () => {
   const scrollRef = useRef(null);
   const nav = useNavigate();
   const [load, setload] = useState(true);
   const [user, setuser] = useState();
+  const dispatch = useDispatch();
 
   const url = useSelector((state) => state.api.value);
   const [allItems, setAllItems] = useState([]);
@@ -49,6 +51,29 @@ const Items = () => {
       });
     }
   };
+
+  useEffect(()=>{
+    const fetchWishlist = async()=>{
+      try {
+        const response = await axios.get(
+          `${url}item/get-wishlist`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json"
+          }
+          }
+        );
+        if (response.status === 200) {
+          const items = response?.data?.data?.wishlist || [];
+          dispatch(setWishlist(items));
+        }
+      } catch (err) {
+        console.error(err);
+      } 
+    }
+    fetchWishlist();
+  },[])
 
   return (
     <div className="w-full px-3 py-6">

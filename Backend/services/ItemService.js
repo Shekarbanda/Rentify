@@ -245,11 +245,9 @@ exports.rejectRequestService = async (requestId) => {
     throw new Error("Request not found");
   }
 
-  request.status = "rejected";
-  await request.save();
-  const requests = await Request.find();
+  const deletedRequest = await Request.findByIdAndDelete(requestId);
 
-  return { requests };
+  return { requests:deletedRequest };
 };
 
 const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID;

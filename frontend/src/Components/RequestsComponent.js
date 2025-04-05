@@ -54,7 +54,7 @@ export default function RequestsComponent() {
     fetchRequests();
   }, [isSentRequests, token, url, activeTab]);
 
-  const filteredRequests = requests?.filter(
+  const filteredRequests = Array.isArray(requests) && requests?.filter(
     (request) => request.status === activeTab
   );
 
@@ -205,7 +205,7 @@ export default function RequestsComponent() {
   };
 
   const handleCancelRequest = async (requestId) => {
-
+    setbtnLoading('cancel'+requestId);
     try {
       const response = await axios.post(
         `${url}item/cancel-request/${requestId}`,
@@ -229,7 +229,7 @@ export default function RequestsComponent() {
 
   return (
     <div className="md:w-[700px] mx-auto sm:p-2">
-      <h2 className="text-3xl font-semibold mb-4 text-center py-3 border-b border-gray-300">
+      <h2 className="text-xl lg:text-3xl font-semibold mb-4 text-center py-3 border-b border-gray-300">
         {isSentRequests ? "SENT RENTAL REQUESTS" : "RECEIVED RENTAL REQUESTS"}
       </h2>
       {/* Tabs */}
@@ -309,7 +309,7 @@ export default function RequestsComponent() {
                           onClick={() => handleCancelRequest(request?._id)}
                           className="w-[40%] md:h-10 p-1 rounded-md mt-2 border-2 text-[#002f34] border-[#002f34] hover:bg-[#002f34] hover:text-white"
                         >
-                          {loading ? <Spinner /> : "Cancel Request"}
+                          {btnloading==='cancel'+request?._id ? <Spinner /> : "Cancel Request"}
                         </button>
                       </div>
                     )
