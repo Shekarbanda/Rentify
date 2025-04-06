@@ -23,6 +23,7 @@ export default function RequestsComponent() {
   const dispatch = useDispatch();
   const [orderId, setOrderId] = useState(localStorage.getItem("orderId") || null);
   const [errorMessage,seterrorMessage] = useState("");
+  const [rentalDays,setRentalDays] = useState(0);
 
   async function fetchRequests() {
     setLoading(true);
@@ -50,7 +51,19 @@ export default function RequestsComponent() {
       setLoading(false);
     }
   }
+
+  const calculateDays = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    const timeDiff = end.getTime() - start.getTime();
+    const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  
+    return days;
+  };
+
   useEffect(() => {
+    
     fetchRequests();
   }, [isSentRequests, token, url, activeTab]);
 
@@ -72,6 +85,17 @@ export default function RequestsComponent() {
   }
 
   function handleNavigate(itemId) {
+    if(!itemId){
+      toast('Item unavailable now.',{
+        icon: '❌',
+  style: {
+    borderRadius: '10px',
+    background: '#b91c1c', // Tailwind red-700
+    color: '#fff',
+  },
+      });
+      return;
+    }
     if (
       location.pathname === "/sent-requests" ||
       location.pathname === "/receive-requests"
@@ -120,11 +144,12 @@ export default function RequestsComponent() {
 
   const handleUpiSubmit = async () => {
     setbtnLoading('save');
-    const profile = {upi_id:upiId};
+    const formData = new FormData();
+    formData.append('upi_id',upiId);
     try {
       const response = await axios.post(
         `${url}user/edit-profile`,
-        { profile }, // Send formData directly, NOT wrapped inside an object
+        formData, // Send formData directly, NOT wrapped inside an object
         {
           headers: {
             Authorization: `Bearer ${token}`, // Send token in Authorization header
@@ -145,6 +170,8 @@ export default function RequestsComponent() {
       setbtnLoading(false);
     }
   };
+
+  
 
   useEffect(() => {
     const checkPaymentStatus = async () => {
@@ -278,6 +305,10 @@ export default function RequestsComponent() {
                       ? request?.receiverId?.email
                       : request?.senderId?.email}
                   </div>
+                  <div className="mt-1">
+                    Requested for:{" "}
+                    {calculateDays(request?.requestDate, request?.endDate)} days
+                  </div>
                 </div>
                 <div className="flex flex-col gap-2">
                   <button
@@ -340,7 +371,7 @@ export default function RequestsComponent() {
                           await initiatePayment(url,request?.itemId?.price,request?._id);
                           setbtnLoading(false);
                         }} className=" w-[40%] md:h-10 p-1 rounded-md mt-2 border-2 bg-[#002f34] text-white">
-                          {btnloading==='payment'+request._id?<Spinner/>:'Proceed with payment'}
+                          {btnloading==='payment'+request._id?<Spinner/>:`Pay ₹${request?.itemId?.price*calculateDays(request?.requestDate, request?.endDate)} now`}
                         </button>
                       </div>
                     )

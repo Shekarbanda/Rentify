@@ -8,7 +8,7 @@ const axios = require("axios");
 const Wishlist = require('../models/wishlistModel')
 
 exports.getAllItemsService = async (userId, category, search, location) => {
-  const filter = {};
+  const filter = {isdisabled:false};
 
   if (userId) {
     filter.ownerId = { $ne: userId }; // Exclude logged-in user’s items
@@ -34,6 +34,37 @@ exports.getAllItemsService = async (userId, category, search, location) => {
   }
   if (location === "India") {
     delete filter.location;
+  }
+
+  const now = new Date();
+
+  // Find items that are expired
+  const expiredItems = await Item.find({
+    availability: { $lt: now },
+  });
+
+  for (const item of expiredItems) {
+    // Delete request if exists
+    await Request.deleteMany({ itemId: item._id });
+
+    // Delete item
+    await Item.findByIdAndDelete(item._id);
+  }
+
+  // Find items that may have been disabled but request time is over
+  const itemsWithRequests = await Request.find({}).populate("itemId");
+
+  for (const req of itemsWithRequests) {
+    const item = req.itemId;
+    if (item && req.endDate <= now) {
+      // Set item to available again
+      await Item.findByIdAndUpdate(item._id, {
+        isdisabled: false
+      });
+
+      // Remove the expired request
+      await Request.deleteMany({ itemId: item._id });
+    }
   }
 
   const items = await Item.find(filter).sort({ createdAt: -1 });
@@ -62,6 +93,7 @@ exports.editItemService = async ({
   userId,
   images,
   itemId,
+  availability,
   oldImages
 }) => {
   const existingItem = await Item.findById(itemId);
@@ -70,7 +102,9 @@ exports.editItemService = async ({
   }
 
   // ✅ Check if images are provided, upload new ones if needed
-  let imageUrls = [...oldImages];  // Keep existing images by default
+  
+    let imageUrls = oldImages?[...oldImages]:[];
+// Keep existing images by default
   if (images && images.length > 0) {
     try {
       const uploadPromises = images.map((image) =>
@@ -98,6 +132,7 @@ exports.editItemService = async ({
   existingItem.location = location || existingItem.location;
   existingItem.images = imageUrls;
   existingItem.ownerId = ownerId || userId || existingItem.ownerId;
+  existingItem.availability = availability || existingItem.availability;
 
   // ✅ Save the updated item
   await existingItem.save();
@@ -111,11 +146,15 @@ exports.deleteItemService = async (id) => {
   }
 
   // Check if there are any requests for this item
-  const requests = await Request.find({ itemId: id, status: "pending" });
+  const requests = await Request.find({ itemId: id, status: "pending"||"completed" });
   if (requests.length > 0) {
     throw new Error("Failed to delete. There is pending requests on this item");
   }
 
+  await Wishlist.updateMany(
+    { items: id },
+    { $pull: { items: id } }
+  );
   // Proceed with deletion if no requests exist
   const itemDeleted = await Item.findByIdAndDelete(id);
   const items = await Item.find({ ownerId: itemDeleted.ownerId });
@@ -148,22 +187,28 @@ exports.getMyAdsService = async (id) => {
   return { items };
 };
 
-exports.sendRequestService = async (senderId, receiverId, itemId) => {
+exports.sendRequestService = async (senderId, receiverId, itemId, days) => {
   if (!senderId || !receiverId || !itemId) {
     throw new Error("All fields are required");
   }
-
+  const currentDate = new Date();
+  const endDate = new Date(currentDate);
+  endDate.setDate(currentDate.getDate() + parseInt(days));
   // Check if a request already exists
   const existingRequest = await Request.findOne({
     senderId,
     receiverId,
-    itemId,
+    itemId
   });
   if (existingRequest) {
     throw new Error("Request already sent");
   }
 
-  const newRequest = new Request({ senderId, receiverId, itemId });
+  await Item.findByIdAndUpdate(itemId, {
+    isdisabled: true, // disable the item now
+  });
+
+  const newRequest = new Request({ senderId, receiverId, itemId, endDate });
   await newRequest.save();
 
   return { newRequest };
@@ -222,7 +267,9 @@ exports.cancelRequestService = async (requestId) => {
   if (!request) {
     throw new Error("Request not found");
   }
-
+  await Item.findByIdAndUpdate(request.itemId, {
+    isdisabled: false, // disable the item now
+  });
   const deletedRequest = await Request.findByIdAndDelete(requestId);
 
   return { deletedRequest };
@@ -247,6 +294,9 @@ exports.rejectRequestService = async (requestId) => {
     throw new Error("Request not found");
   }
 
+  await Item.findByIdAndUpdate(request.itemId, {
+    isdisabled: false, // disable the item now
+  });
   const deletedRequest = await Request.findByIdAndDelete(requestId);
 
   return { requests:deletedRequest };

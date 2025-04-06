@@ -7,6 +7,8 @@ import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "./Spinner";
 import { setUser } from "../Redux/Slices/UserSlice";
+import { format, differenceInCalendarDays } from "date-fns";
+import ConfirmModal from "./ConfirmModal";
 
 export default function PriceCard({ details, loading }) {
   const location = useLocation();
@@ -23,6 +25,10 @@ export default function PriceCard({ details, loading }) {
   const User = useSelector((state) => state.User.value);
   const dispatch = useDispatch();
   const [load,setload] = useState(false);
+  const [rentalDays, setRentalDays] = useState("");
+  const [maxAvailableDays, setMaxAvailableDays] = useState(0);
+  const [error, setError] = useState("");
+  const [cancelopen, setcancelOpen] = useState(false);
 
   const checkRequestStatus = async () => {
     
@@ -54,6 +60,20 @@ export default function PriceCard({ details, loading }) {
           setload(false);
       }
     }
+  };
+
+  useEffect(() => {
+    const now = new Date();
+    const endDate = new Date(details?.availability);
+    const diffDays = differenceInCalendarDays(endDate, now);
+    setMaxAvailableDays(diffDays > 0 ? diffDays : 0);
+  }, [details]);
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setRentalDays(value);
+
+  
   };
   useEffect(() => {
     checkRequestStatus();
@@ -94,11 +114,12 @@ export default function PriceCard({ details, loading }) {
 
   const handleUpiSubmit = async () => {
     setisLoading(true);
-    const profile = {  upi_id: upiId };
+    const formData = new FormData();
+    formData.append('upi_id',upiId);
     try {
       const response = await axios.post(
         `${url}user/edit-profile`,
-        { profile }, // Send formData directly, NOT wrapped inside an object
+        formData, // Send formData directly, NOT wrapped inside an object
         {
           headers: {
             Authorization: `Bearer ${token}`, // Send token in Authorization header
@@ -148,6 +169,7 @@ export default function PriceCard({ details, loading }) {
   const handleSubmit = async () => {
     setisLoading(true);
     if (reqStatus?.status === "pending") {
+
       try {
         const response = await axios.post(
           `${url}item/cancel-request/${reqStatus?.requestId}`,
@@ -166,27 +188,49 @@ export default function PriceCard({ details, loading }) {
         console.error(err?.response?.data);
       } finally {
         setisLoading(false);
+        setcancelOpen(false);
       }
     } else {
       setisLoading(true);
+      if(!rentalDays){
+        setError("Please fill in rental days");
+        toast.error("Failed");
+        setisLoading(false);
+        return;
+      }
+      if (rentalDays > maxAvailableDays) {
+        setError(`Request exceeds availability. Max ${maxAvailableDays} day(s) allowed.`);
+        toast.error("Failed");
+        setisLoading(false);
+        return;
+      }
+      if(rentalDays<=0){
+        setError(`Rental days must be greater than 1`);
+        toast.error("Failed");
+        setisLoading(false);
+        return;
+      }
+      setError("");
       try {
         const response = await axios.post(
           `${url}item/send-request`,
-          { receiverId: details?.ownerId?._id, itemId: details?._id }, // Send formData directly, NOT wrapped inside an object
+          { receiverId: details?.ownerId?._id, itemId: details?._id,days:rentalDays }, // Send formData directly, NOT wrapped inside an object
           {
             headers: {
               Authorization: `Bearer ${islogin}`, // Send token in Authorization header
-              "Content-Type": "multipart/form-data", // Correct content type for file uploads
             },
           }
         );
         if (response?.status === 200) {
           checkRequestStatus();
-          toast.success(`Request sent`);
+          toast.success(`Request sent to ${details?.ownerId?.name} for ${rentalDays}`);
         }
       } catch (err) {
+        toast.error("Failed")
         console.error(err?.response?.data);
       } finally {
+        setError("");
+        setRentalDays(0);
         setisLoading(false);
       }
     }
@@ -205,7 +249,7 @@ export default function PriceCard({ details, loading }) {
 
   return (
     <div className="border rounded-lg p-4 col-span-1 row-span-2 border border-[rgba(5,10,27,0.2)] shadow-md  transition-shadow">
-      <h2 className="text-2xl font-bold">₹ {details?.price}/month</h2>
+      <h2 className="text-2xl font-bold">₹ {details?.price}/day</h2>
       <p className="text-lg my-2">
         {details?.title?.charAt(0)?.toUpperCase() + details?.title?.slice(1)}
       </p>
@@ -228,7 +272,6 @@ export default function PriceCard({ details, loading }) {
           <ProfileCard details={details?.ownerId} />
         </>
       )}
-
       {isfromrequest === "/receive-requests" &&
       reqStatus?.status === "pending" ? (
         <div className="flex space-x-2 mt-4 sm:px-4 text-[10px] sm:text-[1rem]">
@@ -247,13 +290,14 @@ export default function PriceCard({ details, loading }) {
         </div>
       ) : isfromrequest !== "/receive-requests" &&
         reqStatus?.status === "pending" ? (
+          
         <button
           className={` w-[60%] h-[2.6rem] ${
             reqStatus?.status === "pending"
               ? "border-2 text-[#002f34] border-[#002f34] hover:bg-[#002f34] hover:text-white"
               : "bg-[#002f34] text-white "
           } rounded-md mt-5`}
-          onClick={() => (islogin ? handleSubmit() : setIsLoginOpen(true))}
+          onClick={() => (islogin ? setcancelOpen(true) : setIsLoginOpen(true))}
         >
           {
             islogin?(
@@ -267,6 +311,7 @@ export default function PriceCard({ details, loading }) {
             ):"Send Request"
           }
         </button>
+   
       ) : reqStatus?.status === "completed" ? (
         <p className=" py-1 text-blue-500 rounded pt-3 ml-3">Rent Completed</p>
       ) : reqStatus?.status === "approved" ? (
@@ -276,6 +321,27 @@ export default function PriceCard({ details, loading }) {
             : `Request Approved by ${reqStatus?.receiverId?.name}`}
         </p>
       ) : (
+        <div className="p-4 rounded-xl shadow border mt-4">
+          <h2 className="text-lg font-semibold mb-2">📅 Availability</h2>
+          <p className="mb-2 text-gray-600">
+            Available until: <span className="font-medium">{format(new Date(details?.availability), "dd MMM yyyy")}</span> <br />
+            Max rental days: <span className="text-green-600 font-medium">{maxAvailableDays}</span>
+          </p>
+    
+          <div className="flex flex-col  gap-2">
+            <input
+              type="number"
+              min="1"
+              placeholder="Enter rental days"
+              value={rentalDays}
+              onChange={(e)=>handleChange(e)}
+              className="border rounded px-3 py-1 focus:outline-none focus:ring focus:ring-blue-300"
+            />
+            {error && (
+          <span className="text-red-500 text-sm block ml-2 ">
+            {error}
+          </span>
+        )}
         <button
           className={` w-[60%] h-[2.6rem] ${
             reqStatus?.status === "pending"
@@ -296,6 +362,8 @@ export default function PriceCard({ details, loading }) {
             ):"Send Request"
           }
         </button>
+        </div>
+        </div>
       )}
 
       <div className="md:w-[700px] mx-auto sm:p-2">
@@ -342,6 +410,14 @@ export default function PriceCard({ details, loading }) {
         )}
       </div>
       <Login isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <ConfirmModal
+        isOpen={cancelopen}
+        onClose={() => setcancelOpen(false)}
+        onConfirm={handleSubmit}
+        btnmsg={"Yes, Cancel"}
+        message={"Are you sure you want to Cancel request?"}
+      />
+      
     </div>
   );
 }

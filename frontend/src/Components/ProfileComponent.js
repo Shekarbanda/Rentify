@@ -40,10 +40,19 @@ export default function ProfileComponent() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    const invalidFile = allowedTypes.includes(file.type);
+    if (!invalidFile) {
+      seterrorMessage("Only JPEG, PNG, WEBP and JPG files are allowed:");
+      // Optional: toast.error("Only JPEG, PNG, and JPG files are allowed.");
+      return;
+    }
+    seterrorMessage("")
     setProfile((prevProfile) => ({
       ...prevProfile,
       profileImage: file,
     }));
+
   };
 
   const handleDiscard = () => {

@@ -29,6 +29,7 @@ exports.editProfileService = async (
   password,
   oldPassword
 ) => {
+  console.log(location)
   const existingUser = await User.findById(userId);
   if (!existingUser) {
     throw new Error("User with this Email not Exists.");
@@ -70,7 +71,7 @@ exports.editProfileService = async (
     });
     profileImageUrl = uploadedResponse.secure_url; // Get the uploaded image URL
   }
-
+console.log("image ul")
   // ✅ Create an object with only provided fields
   const updateFields = {
     name,
@@ -120,6 +121,7 @@ exports.postItemService = async ({
   location,
   ownerId,
   userId,
+  availability,
   images
 }) => {
   let imageUrls = [];
@@ -149,6 +151,7 @@ exports.postItemService = async ({
     category,
     subcategory,
     location,
+    availability,
     images: imageUrls, // Store array of image URLs
     ownerId: ownerId || userId,
   });

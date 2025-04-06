@@ -61,11 +61,16 @@ exports.editItemController = async (req, res) => {
     subcategory,
     location,
     ownerId,
+    availability,
     oldImages
   } = req.body;
   const { userId } = req.user;
   const { itemId } = req.params;
   const images = req.files;
+  let old = [];
+  if (oldImages) {
+    old = Array.isArray(oldImages) ? oldImages : [oldImages];
+  }
   try {
     const result = await editItemService({
       title,
@@ -78,7 +83,8 @@ exports.editItemController = async (req, res) => {
       userId,
       images:images?.map((file) => file.path),
       itemId,
-      oldImages
+      availability,
+      oldImages:old
   });
     res.status(200).json(successResponse(result, "Item Updated successfully"));
   } catch (error) {
@@ -131,12 +137,13 @@ exports.getMyAdsController = async (req, res) => {
 };
 
 exports.sendRequestController = async (req, res) => {
-  const { receiverId, itemId } = req.body;
+  const { receiverId, itemId, days } = req.body;
   const { userId } = req.user;
   try {
-    const result = await sendRequestService(userId, receiverId, itemId);
+    const result = await sendRequestService(userId, receiverId, itemId, days);
     res.status(200).json(successResponse(result, "Request sent successfully"));
   } catch (error) {
+    console.error(error)
     res
       .status(500)
       .json(errorResponse(error.message || "Internal server error"));

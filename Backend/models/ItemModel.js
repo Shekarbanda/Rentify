@@ -48,9 +48,13 @@ const itemSchema = new mongoose.Schema({
     type: [String], // Array of image URLs
     default: [],
   },
-  available: {
+  availability: {
+    type: Date,
+    required: true
+  },
+  isdisabled:{
     type: Boolean,
-    default: true,
+    default: false
   },
   rentalPeriod: {
     startDate: {

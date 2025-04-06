@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import Spinner from "./Spinner";
 import { useNavigate } from "react-router";
 import { jwtDecode } from "jwt-decode";
+import imageCompression from "browser-image-compression";
 
 const categories = {
   CARS: ["Sedan", "SUV", "Hatchback"],
@@ -36,6 +37,7 @@ export default function PostItem() {
     subcategory: "",
     location: "",
     images: [],
+    availability : ""
   });
 
   useEffect(() => {
@@ -48,6 +50,7 @@ export default function PostItem() {
         subcategory: item.subcategory || "",
         location: item.location || "",
         images: item.images || [],
+        availability: item.availability || ""
       });
     }
   }, [item]);
@@ -55,35 +58,59 @@ export default function PostItem() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    console.log(formData)
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
     const maxImages = 5;
+    const maxSizeMB = 5;
   
     // Check total images limit
     if (formData.images.length + files.length > maxImages) {
-      seterrorMessage(`Cannot add more than ${maxImages} images. Current: ${formData.images.length}, Trying to add: ${files.length}`);
-      // Optional: Add user feedback (e.g., toast)
-      // toast.error(`You can only upload up to ${maxImages} images.`);
+      seterrorMessage(
+        `Cannot add more than ${maxImages} images. Current: ${formData.images.length}, Trying to add: ${files.length}`
+      );
       return;
     }
   
-    // Optional: Validate file types
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-    const invalidFiles = files.filter((file) => !allowedTypes.includes(file.type));
-    if (invalidFiles.length > 0) {
-      seterrorMessage("Only JPEG, PNG, and JPG files are allowed:", invalidFiles.map(f => f.name));
-      // Optional: toast.error("Only JPEG, PNG, and JPG files are allowed.");
-      return;
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+    const validCompressedImages = [];
+  
+    for (let file of files) {
+      if (!allowedTypes.includes(file.type)) {
+        seterrorMessage(`Only JPEG, PNG, WEBP, and JPG files are allowed.`);
+        return;
+      }
+  
+      if (file.size > maxSizeMB * 1024 * 1024) {
+        seterrorMessage(`File "${file.name}" exceeds 5MB size limit.`);
+        return;
+      }
+  
+      try {
+        const options = {
+          maxSizeMB: 1, // Compress to ~1MB max
+          maxWidthOrHeight: 1000,
+          useWebWorker: true,
+        };
+  
+        const compressedFile = await imageCompression(file, options);
+        validCompressedImages.push(compressedFile);
+      } catch (err) {
+        console.error("Compression error:", err);
+        seterrorMessage("Image compression failed.");
+        return;
+      }
     }
   
-    // Update state with new images
+    seterrorMessage("");
     setFormData((prevData) => ({
       ...prevData,
-      images: [...prevData.images, ...files],
+      images: [...prevData.images, ...validCompressedImages],
     }));
   };
+
   const handleImageRemove = (index) => {
     const newImages = formData.images.filter((_, i) => i !== index);
     setFormData({ ...formData, images: newImages });
@@ -97,7 +124,8 @@ export default function PostItem() {
       !formData.location ||
       !formData.price ||
       !formData.subcategory ||
-      !formData.title
+      !formData.title ||
+      !formData.availability
     ) {
       seterrorMessage("Please fill in all fields");
       return;
@@ -115,11 +143,16 @@ export default function PostItem() {
   newFormData.append("price", formData.price);
   newFormData.append("subcategory", formData.subcategory);
   newFormData.append("title", formData.title);
+  newFormData.append("availability",formData.availability);
 
   // Append the images array (assuming images is an array of File objects)
   if (formData.images && formData.images.length > 0) {
     formData.images.forEach((image, index) => {
-      newFormData.append(`images`, image); // Name each file as images[0], images[1], etc.
+      if (image?.type === 'image/jpeg') {
+        newFormData.append(`images`, image);
+      } else {
+        newFormData.append("oldImages", image);
+      } // Name each file as images[0], images[1], etc.
     });
   }
     setisLoading(true);
@@ -168,14 +201,20 @@ export default function PostItem() {
           placeholder="Description"
           className="w-full border border-[rgba(5,10,27,0.33)] p-2 rounded"
         ></textarea>
-        <input
-          type="number"
-          name="price"
-          value={formData.price}
-          onChange={handleChange}
-          placeholder="Price"
-          className="w-full p-2 border border-[rgba(5,10,27,0.33)] rounded"
-        />
+        <div className="relative w-full">
+  <input
+    type="number"
+    name="price"
+    value={formData.price}
+    onChange={handleChange}
+    placeholder="Price per day"
+    className="w-full pr-16 p-2 border border-[rgba(5,10,27,0.33)] rounded"
+  />
+  <span className="absolute top-1/2 right-3 transform -translate-y-1/2  text-gray-600 pointer-events-none">
+    /day
+  </span>
+</div>
+
         <div className="flex space-x-2">
           <select
             name="category"
@@ -220,6 +259,21 @@ export default function PostItem() {
               </option>
             ))}
         </select>
+        <div class="my-4">
+  <label for="availability-date" class="block text-sm font-medium text-gray-700 mb-1">
+  Availability Until (future dates only)
+  </label>
+  <input
+    type="date"
+    name="availability"
+    onChange={(e)=>handleChange(e)}
+    min={new Date().toISOString().split("T")[0]}
+    value={formData?.availability}
+    id="availability-date"
+    class="w-full  px-4 py-2 border-2  rounded bg-white text-gray-800 shadow-sm  transition duration-300"
+  />
+</div>
+
 
         <h3 className="font-bold">Upload up to 5 Photos</h3>
         <div className="flex flex-wrap items-center gap-2 overflow-x-auto p-2 border rounded border-[rgba(5,10,27,0.33)]">

@@ -19,6 +19,7 @@ exports.editProfileController = async (req, res) => {
     password,
     oldPassword
   } = req.body;
+  console.log(req.body)
   const { userId } = req.user;
   const profileImage = req.file ? req.file.path : null;
   try {
@@ -77,6 +78,7 @@ exports.postItemController = async (req, res) => {
     subcategory,
     location,
     ownerId,
+    availability
   } = req.body;
   const { userId } = req.user;
   const images = req.files;
@@ -90,6 +92,7 @@ exports.postItemController = async (req, res) => {
       location,
       ownerId,
       userId,
+      availability,
       images: images?.map((file) => file.path)
   });
     res.status(200).json(successResponse(result, "Item added successfully"));

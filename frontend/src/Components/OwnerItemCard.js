@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom"; // Ensure correct import
 import Spinner from "./Spinner";
 import { setItems } from "../Redux/Slices/ItemSlice";
+import ConfirmModal from "./ConfirmModal";
 
 export default function OwnerItemCard({ details, isload }) {
   const path = useLocation().pathname;
@@ -16,6 +17,8 @@ export default function OwnerItemCard({ details, isload }) {
   const url = useSelector((state) => state.api.value);
   const [isLoading, setisLoading] = useState(false);
   const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+
 
   function handleNavigate() {
     if (path === "/myads") {
@@ -45,6 +48,7 @@ export default function OwnerItemCard({ details, isload }) {
     } catch (err) {
       toast.error(err?.response?.data?.message);
     } finally {
+      setOpen(false);
       setisLoading(false);
     }
   };
@@ -95,7 +99,7 @@ export default function OwnerItemCard({ details, isload }) {
 
       {/* Content Section */}
       <div className="flex-1 space-y-2 px-3 text-left">
-        <h2 className="sm:text-2xl text-lg font-bold">₹ {details?.price}/mo</h2>
+        <h2 className="sm:text-2xl text-lg font-bold">₹ {details?.price}/day</h2>
         <p className="sm:text-lg text-md">
           {details?.title?.charAt(0)?.toUpperCase() + details?.title?.slice(1)}
         </p>
@@ -118,7 +122,7 @@ export default function OwnerItemCard({ details, isload }) {
           <p className="hidden sm:block">Edit</p>
         </button>
         <button
-          onClick={handleDelete}
+          onClick={()=>setOpen(true)}
           className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition flex items-center"
         >
           <AiOutlineDelete className="mr-2" />
@@ -127,6 +131,13 @@ export default function OwnerItemCard({ details, isload }) {
           </div>
         </button>
       </div>
+      <ConfirmModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={handleDelete}
+        btnmsg={"Yes, Delete"}
+        message={"Are you sure you want to delete this post?"}
+      />
     </div>
   );
 }

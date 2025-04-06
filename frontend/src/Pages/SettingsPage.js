@@ -51,13 +51,12 @@ const SettingsPage = () => {
       return;
     }
     setisLoading('upi');
-    const profile = {
-      upi_id:upiId
-    };
+    const formData = new FormData();
+    formData.append('upi_id',upiId);
     try {
       const response = await axios.post(
         `${url}user/edit-profile`,
-        { profile }, // Send formData directly, NOT wrapped inside an object
+        formData, // Send formData directly, NOT wrapped inside an object
         {
           headers: {
             Authorization: `Bearer ${token}`, // Send token in Authorization header
@@ -99,15 +98,14 @@ const SettingsPage = () => {
       seterrorMessage("Password must be at least 6 characters long!");
       return;
     }
-    const profile = {
-      password: newPassword,
-      oldPassword: oldPassword,
-    };
+    const formData = new FormData();
+    formData.append('password',newPassword);
+    formData.append('oldPassword',oldPassword);
     setisLoading('pass');
     try {
       const response = await axios.post(
         `${url}user/edit-profile`,
-        { profile }, // Send formData directly, NOT wrapped inside an object
+        formData, // Send formData directly, NOT wrapped inside an object
         {
           headers: {
             Authorization: `Bearer ${token}`, // Send token in Authorization header

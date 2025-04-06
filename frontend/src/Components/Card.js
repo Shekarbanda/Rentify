@@ -32,7 +32,7 @@ const Card = ({ isLoading, iswishlist, item, style1 }) => {
     const today = new Date();
     const diffTime = today - createdDate;
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
+    if(diffDays === 0) return "Today"
     if (diffDays === 1) return "Yesterday";
     if (diffDays >= 2 && diffDays <= 7) return `${diffDays} days ago`;
 
@@ -113,7 +113,7 @@ const Card = ({ isLoading, iswishlist, item, style1 }) => {
         {/* Content Section */}
         <div className="p-4" onClick={() => nav(`/item/${item?._id}`)}>
           <h2 className="text-xl font-semibold text-gray-800">
-            ₹ {item?.price}/mo
+            ₹ {item?.price}/day
           </h2>
           <p className="text-gray-700 font-medium">
             {item?.title?.charAt(0)?.toUpperCase() + item?.title?.slice(1)}

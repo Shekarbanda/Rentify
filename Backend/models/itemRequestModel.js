@@ -9,6 +9,7 @@ const ItemRequestSchema = new mongoose.Schema({
     type: String,
     default: "pending",
   },
+  endDate:{type: Date, required:true},
   requestDate: { type: Date, default: Date.now },
 });
 
