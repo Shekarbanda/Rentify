@@ -9,7 +9,7 @@ import LocationCard from "./LocationCard";
 import ImageGallerySkeleton from "./ImageGallerySkeleton";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 const Details = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -18,6 +18,7 @@ const Details = () => {
   const [itemDetails, setitemDetails] = useState([]);
   const { itemId } = useParams();
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const fetchItems = async () => {
     try {
@@ -36,6 +37,7 @@ const Details = () => {
       }
     } catch (err) {
       console.error(err);
+      navigate('/explore-rentals');
     } finally {
       setload(false);
     }

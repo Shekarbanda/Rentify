@@ -55,6 +55,7 @@ export default function PriceCard({ details, loading }) {
         }
       } catch (error) {
         console.error("Error checking request status:", error);
+        navigate('/explore-rentals');
       }
       finally{
           setload(false);

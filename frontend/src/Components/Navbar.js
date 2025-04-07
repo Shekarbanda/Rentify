@@ -93,34 +93,50 @@ export default function Navbar() {
         case "view-profile":
           dispatch(setSearch(""));
           nav("/user-profile");
+          setMenuOpen(false);
+          setmobile(false)
           break;
         case "add-item":
           dispatch(setSearch(""));
           nav("/post");
+          setMenuOpen(false);
+          setmobile(false)
           break;
         case "my-ads":
           dispatch(setSearch(""));
           nav("/myads");
+          setMenuOpen(false);
+          setmobile(false)
           break;
         case "wishlist":
           dispatch(setSearch(""));
           nav("/wishlist");
+          setMenuOpen(false);
+          setmobile(false)
           break;
         case "received":
           dispatch(setSearch(""));
           nav("/receive-requests");
+          setMenuOpen(false);
+          setmobile(false)
           break;
         case "sent":
           dispatch(setSearch(""));
           nav("/sent-requests");
+          setMenuOpen(false);
+          setmobile(false)
           break;
         case "settings":
           dispatch(setSearch(""));
           nav("/settings");
+          setMenuOpen(false);
+          setmobile(false)
           break;
           case "help":
             dispatch(setSearch(""));
             nav("/help");
+            setMenuOpen(false);
+          setmobile(false)
             break;
         default:
           dispatch(setSearch(""));
@@ -130,39 +146,55 @@ export default function Navbar() {
       switch (menu) {
         case "view-profile":
           dispatch(setSearch(""));
+          setMenuOpen(false);
+          setmobile(false)
           localStorage.setItem("redirectPath", "/user-profile");
           setIsLoginOpen(true);
           break;
         case "add-item":
           dispatch(setSearch(""));
+          setMenuOpen(false);
+          setmobile(false)
           localStorage.setItem("redirectPath", "/post");
           setIsLoginOpen(true);
           break;
         case "my-ads":
           dispatch(setSearch(""));
+          setMenuOpen(false);
+          setmobile(false)
           localStorage.setItem("redirectPath", "/myads");
           setIsLoginOpen(true);
           break;
         case "settings":
           dispatch(setSearch(""));
+          setMenuOpen(false);
+          setmobile(false)
           nav("/settings");
           break;
           case "help":
             dispatch(setSearch(""));
+            setMenuOpen(false);
+          setmobile(false)
             nav("/help");
             break;
         case "wishlist":
           dispatch(setSearch(""));
+          setMenuOpen(false);
+          setmobile(false)
           localStorage.setItem("redirectPath", "/wishlist");
           setIsLoginOpen(true);
           break;
         case "received":
           dispatch(setSearch(""));
+          setMenuOpen(false);
+          setmobile(false)
           localStorage.setItem("redirectPath", "/requests");
           setIsLoginOpen(true);
           break;
         case "sent":
           dispatch(setSearch(""));
+          setMenuOpen(false);
+          setmobile(false)
           localStorage.setItem("redirectPath", "/sent-requests");
           setIsLoginOpen(true);
           break;
