@@ -317,7 +317,7 @@ exports.paymentService = async (requestId,user,amount) => {
         customer_details: {
             customer_id: user?.userId,
             customer_email: user?.email,
-            customer_phone: user?.phone
+            customer_phone: user?.phone || "9765783683"
         },
         order_meta: {
           return_url: "https://rentify-furd.onrender.com/sent-requests" // ✅ Redirect after success
