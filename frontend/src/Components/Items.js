@@ -5,14 +5,16 @@ import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { setWishlist } from "../Redux/Slices/ItemSlice";
+import { setAllItemsState, setWishlist } from "../Redux/Slices/ItemSlice";
 
 const Items = () => {
   const scrollRef = useRef(null);
   const nav = useNavigate();
-  const [load, setload] = useState(true);
+  const [load, setload] = useState(false);
   const [user, setuser] = useState();
   const dispatch = useDispatch();
+  const itemsfromstate =  useSelector((state)=>state.Item.allItems);
+  const filters = useSelector((state)=>state.Category.filters);
 
   const url = useSelector((state) => state.api.value);
   const [allItems, setAllItems] = useState([]);
@@ -24,6 +26,7 @@ const Items = () => {
       });
       if (response.status === 200) {
         const items = response?.data?.data?.items || [];
+        dispatch(setAllItemsState(items));
         setAllItems(items);
       }
     } catch (err) {
@@ -34,13 +37,23 @@ const Items = () => {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      const user = jwtDecode(localStorage.getItem("token"));
-      fetchItems(user);
-    } else {
-      fetchItems();
+    setAllItems(itemsfromstate); // Always update UI with latest state
+  
+    const shouldFetch =
+      itemsfromstate?.length === 0;
+  
+    if (shouldFetch) {
+      setload(true);
+      const token = localStorage.getItem("token");
+  
+      if (token) {
+        const user = jwtDecode(token);
+        fetchItems(user); // Fetch with user context
+      } else {
+        fetchItems(); // Fetch without user
+      }
     }
-  }, [url]);
+  }, []);
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -72,7 +85,9 @@ const Items = () => {
         console.error(err);
       } 
     }
-    fetchWishlist();
+    if(localStorage.getItem('token')){
+      fetchWishlist();
+    }
   },[])
 
   return (

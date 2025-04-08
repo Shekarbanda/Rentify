@@ -5,7 +5,9 @@ const ItemSlice = createSlice({
   initialState: {
     value: [],
     load: true,
-    wishlist:[]
+    wishlist:[],
+    allItems:[],
+    itemDetails:{}
   },
   reducers: {
     setItems: (state, action) => {
@@ -16,9 +18,16 @@ const ItemSlice = createSlice({
     },
     setWishlist:(state, action)=>{
       state.wishlist = action.payload
+    },
+    setAllItemsState: (state,action)=>{
+      state.allItems = action.payload
+    },
+    setItemDetails: (state, action) => {
+      const { itemId, data } = action.payload;
+      state.itemDetails[itemId] = data;
     }
   },
 });
 
-export const { setItems, setLoad, setWishlist } = ItemSlice.actions;
+export const { setItems, setLoad, setWishlist, setAllItemsState, setItemDetails } = ItemSlice.actions;
 export default ItemSlice.reducer;

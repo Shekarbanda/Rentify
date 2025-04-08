@@ -24,7 +24,7 @@ import { setUser } from "../Redux/Slices/UserSlice";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Spinner from "./Spinner";
-import { setLocation, setSearch } from "../Redux/Slices/CategorySlice";
+import { setLocation, setPrevLoc, setSearch } from "../Redux/Slices/CategorySlice";
 
 export default function Navbar() {
   const [mobile, setmobile] = useState(false);
@@ -42,6 +42,7 @@ export default function Navbar() {
   const token = localStorage.getItem("token");
   const search = useSelector((state) => state.Category.search);
   const location = useSelector((state) => state.Category.location);
+    const prevloc = useSelector((state)=>state.Category.prevLoc);
 
   const fetch = async () => {
     try {
@@ -233,12 +234,11 @@ export default function Navbar() {
               <select
                 name="location"
                 value={location}
-                onChange={(e) => dispatch(setLocation(e.target.value))}
+                onChange={(e) =>{ dispatch(setPrevLoc(location)); 
+                  dispatch(setLocation(e.target.value))}}
                 className="w-[250px] sm:w-[200px] h-[2.8rem] rounded-[4px] p-2 border border-black mr-2 cursor-pointer"
               >
                 <option>India</option>
-                <option>Hyderabad</option>
-                <option>Bangalore</option>
               </select>
             </div>
 

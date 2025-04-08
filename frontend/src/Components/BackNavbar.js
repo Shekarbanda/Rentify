@@ -44,7 +44,9 @@ export default function BackNavbar() {
     else{
       setislogin(false);
     }
-    fetchWishlist();
+    if(islogin){
+      fetchWishlist();
+    }
   }, []);
 
    const handleFavorite = async(itemId)=>{

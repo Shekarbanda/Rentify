@@ -171,21 +171,16 @@ const handleImageUpload = async (e) => {
     newFormData.append("title", formData.title);
     newFormData.append("availability",formData.availability);
 
-    console.log(formData);
     // Append the images array (assuming images is an array of File objects)
 
     if (formData.images && formData.images.length > 0) {
       formData.images.forEach((image, index) => {
-        console.log(typeof image)
         if (image?.type === 'image/jpeg') {
           newFormData.append(`images`, image);
         } else {
           newFormData.append("oldImages", image);
         } // Name each file as images[0], images[1], etc.
       });
-    }
-    for (let [key, value] of newFormData.entries()) {
-      console.log(`${key}:`, value);
     }
     setisLoading(true);
     try {
@@ -209,7 +204,7 @@ const handleImageUpload = async (e) => {
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       seterrorMessage(error?.data ? error?.data?.message : error?.message);
     } finally {
       setisLoading(false);

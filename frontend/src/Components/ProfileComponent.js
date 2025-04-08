@@ -97,7 +97,7 @@ export default function ProfileComponent() {
       }
     } catch (err) {
       seterrorMessage(err?.response?.data?.message);
-      console.log(err)
+      console.error(err)
     } finally {
       setisLoading(false);
     }

@@ -7,20 +7,25 @@ import DetailCard from "./DetailCard";
 import PriceCard from "./PriceCard";
 import LocationCard from "./LocationCard";
 import ImageGallerySkeleton from "./ImageGallerySkeleton";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
+import toast from "react-hot-toast";
+import { setItemDetails } from "../Redux/Slices/ItemSlice";
 
 const Details = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [load, setload] = useState(true);
+  const [load, setload] = useState(false);
   const url = useSelector((state) => state.api.value);
   const [itemDetails, setitemDetails] = useState([]);
   const { itemId } = useParams();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const allItemDetails = useSelector((state)=>state.Item.itemDetails);
 
   const fetchItems = async () => {
+    setload(true);
     try {
       const response = await axios.get(
         `${url}item/get-item-details/${itemId}`,
@@ -33,10 +38,15 @@ const Details = () => {
       );
       if (response.status === 200) {
         const item = response?.data?.data?.item || [];
+        dispatch(setItemDetails({ itemId: itemId, data: item }));
+        if(item?.length===0){
+          navigate('/explore-rentals')
+        }
         setitemDetails(item);
       }
     } catch (err) {
       console.error(err);
+      toast.error("Item not found")
       navigate('/explore-rentals');
     } finally {
       setload(false);
@@ -44,7 +54,13 @@ const Details = () => {
   };
 
   useEffect(() => {
-    fetchItems();
+    if(!allItemDetails[itemId]){
+      fetchItems();
+    }
+    else{
+      setitemDetails(allItemDetails[itemId]);
+    }
+    
   }, [url]);
 
   const handleNext = () => {

@@ -6,6 +6,8 @@ const CategorySlice = createSlice({
     value: "",
     search: "",
     location: "",
+    prevLoc :"",
+    filters:{}
   },
   reducers: {
     setCategories: (state, action) => {
@@ -17,8 +19,15 @@ const CategorySlice = createSlice({
     setLocation: (state, action) => {
       state.location = action.payload;
     },
+    setPrevLoc:(state,action)=>{
+      state.prevCat = action.payload;
+    },
+    setFilters: (state, action) => {
+      const { filter, data } = action.payload;
+      state.filters[filter] = data;
+    },
   },
 });
 
-export const { setCategories, setSearch, setLocation } = CategorySlice.actions;
+export const { setCategories, setSearch, setLocation, setPrevLoc, setFilters } = CategorySlice.actions;
 export default CategorySlice.reducer;

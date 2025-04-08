@@ -10,7 +10,7 @@ import {
   FaFootballBall,
   FaThLarge,
 } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCategories, setSearch } from "../Redux/Slices/CategorySlice";
 import { useNavigate } from "react-router";
 
@@ -29,9 +29,12 @@ const categories = [
 export default function Category() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const prevcat = useSelector((state)=>state.Category.prevCat);
 
   const handleClick = (cat) => {
-    dispatch(setCategories(cat?.name));
+      dispatch(setCategories(cat?.name));
+    
+    
     dispatch(setSearch(""));
     navigate("/explore-rentals");
   };

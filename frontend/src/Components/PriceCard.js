@@ -325,7 +325,7 @@ export default function PriceCard({ details, loading }) {
         <div className="p-4 rounded-xl shadow border mt-4">
           <h2 className="text-lg font-semibold mb-2">📅 Availability</h2>
           <p className="mb-2 text-gray-600">
-            Available until: <span className="font-medium">{format(new Date(details?.availability), "dd MMM yyyy")}</span> <br />
+            Available until: <span className="font-medium">{details?.length!==0 && format(new Date(details?.availability), "dd MMM yyyy")}</span> <br />
             Max rental days: <span className="text-green-600 font-medium">{maxAvailableDays}</span>
           </p>
     
