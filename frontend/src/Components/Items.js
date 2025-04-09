@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { setAllItemsState, setWishlist } from "../Redux/Slices/ItemSlice";
-import { setCategories } from "../Redux/Slices/CategorySlice";
+import { setCategories, setFilters } from "../Redux/Slices/CategorySlice";
 
 const Items = () => {
   const scrollRef = useRef(null);
@@ -14,8 +14,8 @@ const Items = () => {
   const [load, setload] = useState(false);
   const [user, setuser] = useState();
   const dispatch = useDispatch();
-  const itemsfromstate =  useSelector((state)=>state.Item.allItems);
-  const filters = useSelector((state)=>state.Category.filters);
+  const itemsfromstate = useSelector((state) => state.Item.allItems);
+  const filters = useSelector((state) => state.Category.filters);
 
   const url = useSelector((state) => state.api.value);
   const [allItems, setAllItems] = useState([]);
@@ -27,6 +27,18 @@ const Items = () => {
       });
       if (response.status === 200) {
         const items = response?.data?.data?.items || [];
+        const categorized = { ALL: items };
+
+        items.forEach((item) => {
+          const cat = item.category || "Other";
+          if (!categorized[cat]) categorized[cat] = [];
+          categorized[cat].push(item);
+        });
+
+        // Dispatch each category's filter data
+        Object.entries(categorized).forEach(([cat, items]) => {
+          dispatch(setFilters({ filter: cat, data: items }));
+        });
         dispatch(setAllItemsState(items));
         setAllItems(items);
       }
@@ -38,16 +50,15 @@ const Items = () => {
   };
 
   useEffect(() => {
-    dispatch(setCategories('ALL'));
+    dispatch(setCategories("ALL"));
     setAllItems(itemsfromstate); // Always update UI with latest state
-  
-    const shouldFetch =
-      itemsfromstate?.length === 0;
-  
+
+    const shouldFetch = itemsfromstate?.length === 0;
+
     if (shouldFetch) {
       setload(true);
       const token = localStorage.getItem("token");
-  
+
       if (token) {
         const user = jwtDecode(token);
         fetchItems(user); // Fetch with user context
@@ -67,30 +78,27 @@ const Items = () => {
     }
   };
 
-  useEffect(()=>{
-    const fetchWishlist = async()=>{
+  useEffect(() => {
+    const fetchWishlist = async () => {
       try {
-        const response = await axios.get(
-          `${url}item/get-wishlist`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-              "Content-Type": "application/json"
-          }
-          }
-        );
+        const response = await axios.get(`${url}item/get-wishlist`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        });
         if (response.status === 200) {
           const items = response?.data?.data?.wishlist || [];
           dispatch(setWishlist(items));
         }
       } catch (err) {
         console.error(err);
-      } 
-    }
-    if(localStorage.getItem('token')){
+      }
+    };
+    if (localStorage.getItem("token")) {
       fetchWishlist();
     }
-  },[])
+  }, []);
 
   return (
     <div className="w-full px-3 py-6">
