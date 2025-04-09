@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { setAllItemsState, setWishlist } from "../Redux/Slices/ItemSlice";
+import { setCategories } from "../Redux/Slices/CategorySlice";
 
 const Items = () => {
   const scrollRef = useRef(null);
@@ -37,6 +38,7 @@ const Items = () => {
   };
 
   useEffect(() => {
+    dispatch(setCategories('ALL'));
     setAllItems(itemsfromstate); // Always update UI with latest state
   
     const shouldFetch =

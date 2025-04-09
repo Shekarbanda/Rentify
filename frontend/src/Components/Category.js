@@ -36,7 +36,6 @@ export default function Category() {
     
     
     dispatch(setSearch(""));
-    navigate("/explore-rentals");
   };
   return (
     <div className="mx-auto text-center pt-1 bg-[rgba(236,238,241,0.68)]">

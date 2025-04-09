@@ -4,7 +4,7 @@ import { CiSearch } from "react-icons/ci";
 import { RiMenu2Line } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
 import { LuClipboardList } from "react-icons/lu";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import Signup from "../Pages/Signup";
 import Login from "../Pages/Login";
 import { IoIosArrowDown } from "react-icons/io";
@@ -43,6 +43,7 @@ export default function Navbar() {
   const search = useSelector((state) => state.Category.search);
   const location = useSelector((state) => state.Category.location);
     const prevloc = useSelector((state)=>state.Category.prevLoc);
+    const route  = useLocation().pathname;
 
   const fetch = async () => {
     try {
@@ -251,7 +252,7 @@ export default function Navbar() {
                 placeholder="Find Items,Cars,Bikes and more..."
                 className="border border-black w-[30vw] sm:w-[15vw] xl:w-[650px] h-[2.8rem] rounded-l-[4px] p-3 text-[1.2rem]"
               />
-              <div onClick={()=>nav('/explore-rentals')} className="w-[50px] m-auto bg-[#002f34] text-white flex justify-center items-center rounded-r-[4px]">
+              <div onClick={()=>{ if(route!=='/explore-rentals')nav('/explore-rentals')}} className="w-[50px] m-auto bg-[#002f34] text-white flex justify-center items-center rounded-r-[4px]">
                 <CiSearch className="w-[25px] h-[2.8rem] cursor-pointer" />
               </div>
             </div>
