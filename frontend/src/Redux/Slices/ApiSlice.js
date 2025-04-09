@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const ApiSlice = createSlice({
   name: "api",
   initialState: {
-    value: "http://localhost:8000/api/v1/",
+    value: "https://rentify-backend-7i2g.onrender.com/api/v1/",
   },
   reducers: {},
 });
