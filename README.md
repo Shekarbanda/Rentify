@@ -15,14 +15,11 @@ Users stay safe with robust **login/signup functionality** using encrypted crede
 ✅ **Smart Search & Filters**  
 Instantly find what you need with **smart category filters**, price sorting, and keyword search.
 
-✅ **Chat-Enabled**  
-In-app messaging system lets renters and owners communicate instantly and finalize details.
-
 ✅ **Responsive Design**  
 Fully mobile-responsive and user-friendly interface.
 
-✅ **AWS S3 Integration**  
-Item and profile images are stored securely in **Amazon S3** – optimized for speed and scalability.
+✅ **cloudinary Integration**  
+Item and profile images are stored securely in **cloudinary** – optimized for speed and scalability.
 
 ---
 
@@ -49,9 +46,6 @@ Item and profile images are stored securely in **Amazon S3** – optimized for s
 3. **Browse & Rent**  
    Explore a curated feed of rentals. Use filters to find what fits your needs.
 
-4. **Chat & Confirm**  
-   Talk with the owner and agree on rental terms via in-app messaging.
-
 5. **Track & Review**  
    Renters and owners can rate each other, building a trustworthy community.
 
@@ -59,9 +53,10 @@ Item and profile images are stored securely in **Amazon S3** – optimized for s
 
 ## 📸 Sneak Peek
 
-> Add some screenshots here in the GitHub repo or via `![Alt text](image-url)` in the actual README.
 
----
+
+---![Screenshot 2025-04-08 112057](https://github.com/user-attachments/assets/4cf1dfc9-f576-4f5d-b32c-bc0471f0a153)
+
 
 ## 🤝 Future Plans
 
@@ -74,10 +69,10 @@ Item and profile images are stored securely in **Amazon S3** – optimized for s
 
 ## 🧑‍💻 Developer
 
-**👋 Hey there! I'm [Your Name],**  
+**👋 Hey there! I'm Shekar Banda,**  
 a passionate full-stack developer driven by impactful ideas. Rentify was crafted as a final year project but continues to grow into something more.
 
-📫 Reach me on [LinkedIn](your-linkedin-url) | 💻 Portfolio: [your-portfolio-link]
+📫 Reach me on [LinkedIn](https://www.linkedin.com/in/shekar-banda-736815258) | 💻 Portfolio: https://shekarbandaportfolio.netlify.app
 
 ---
 
