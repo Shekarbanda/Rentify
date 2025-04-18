@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { setCategories, setSearch } from "../Redux/Slices/CategorySlice";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 const categories = [
   { name: "ALL", icon: <FaThLarge size={15} /> },
@@ -30,8 +30,12 @@ export default function Category() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const prevcat = useSelector((state)=>state.Category.prevCat);
+  const route  = useLocation().pathname;
 
   const handleClick = (cat) => {
+    if(route!=='/explore-rentals'){
+      navigate('/explore-rentals')
+    }
       dispatch(setCategories(cat?.name));
     
     

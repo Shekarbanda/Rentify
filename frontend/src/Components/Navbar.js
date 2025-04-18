@@ -24,7 +24,7 @@ import { setUser } from "../Redux/Slices/UserSlice";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Spinner from "./Spinner";
-import { setLocation, setPrevLoc, setSearch } from "../Redux/Slices/CategorySlice";
+import { setCategories, setLocation, setPrevLoc, setSearch } from "../Redux/Slices/CategorySlice";
 
 export default function Navbar() {
   const [mobile, setmobile] = useState(false);
@@ -112,6 +112,7 @@ export default function Navbar() {
           break;
         case "wishlist":
           dispatch(setSearch(""));
+          dispatch(setCategories("ALL"));
           nav("/wishlist");
           setMenuOpen(false);
           setmobile(false)
