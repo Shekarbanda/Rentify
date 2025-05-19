@@ -66,8 +66,6 @@ Item and profile images are stored securely in **Amazon S3** – optimized for s
 
 - 📍 Location-based search  
 - 🔄 One-click item relist  
-- 🏆 Top renter/owner leaderboard  
-- 🔔 Email/SMS notifications
 
 ---
 
