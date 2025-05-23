@@ -54,6 +54,14 @@ export default function EditItem() {
     fetchItems();
   }, [url]);
 
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return isNaN(date) ? "" : date.toISOString().split("T")[0];
+  };
+
+  const location = ["Hyderabad", "Bangalore"];
+
   const [formData, setFormData] = useState({
     title: "loading...",
     description: "loading...",
@@ -62,7 +70,7 @@ export default function EditItem() {
     subcategory: "loading...",
     location: "loading...",
     images: [],
-    availability: "Loading..."
+    availability: "Loading...",
   });
 
   useEffect(() => {
@@ -75,7 +83,7 @@ export default function EditItem() {
         subcategory: itemDetails.subcategory || "Loading...",
         location: itemDetails.location || "Loading...",
         images: itemDetails?.images || [],
-        availability: itemDetails?.availability || ""
+        availability: itemDetails?.availability || "",
       });
     }
   }, [itemDetails]);
@@ -85,57 +93,55 @@ export default function EditItem() {
     setFormData({ ...formData, [name]: value });
   };
 
-  
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    const maxImages = 5;
+    const maxSizeMB = 5;
 
-const handleImageUpload = async (e) => {
-  const files = Array.from(e.target.files);
-  const maxImages = 5;
-  const maxSizeMB = 5;
-
-  // Check total images limit
-  if (formData.images.length + files.length > maxImages) {
-    seterrorMessage(
-      `Cannot add more than ${maxImages} images. Current: ${formData.images.length}, Trying to add: ${files.length}`
-    );
-    return;
-  }
-
-  const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
-  const validCompressedImages = [];
-
-  for (let file of files) {
-    if (!allowedTypes.includes(file.type)) {
-      seterrorMessage(`Only JPEG, PNG, WEBP, and JPG files are allowed.`);
+    // Check total images limit
+    if (formData.images.length + files.length > maxImages) {
+      seterrorMessage(
+        `Cannot add more than ${maxImages} images. Current: ${formData.images.length}, Trying to add: ${files.length}`
+      );
       return;
     }
 
-    if (file.size > maxSizeMB * 1024 * 1024) {
-      seterrorMessage(`File "${file.name}" exceeds 5MB size limit.`);
-      return;
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+    const validCompressedImages = [];
+
+    for (let file of files) {
+      if (!allowedTypes.includes(file.type)) {
+        seterrorMessage(`Only JPEG, PNG, WEBP, and JPG files are allowed.`);
+        return;
+      }
+
+      if (file.size > maxSizeMB * 1024 * 1024) {
+        seterrorMessage(`File "${file.name}" exceeds 5MB size limit.`);
+        return;
+      }
+
+      try {
+        const options = {
+          maxSizeMB: 1, // Compress to ~1MB max
+          maxWidthOrHeight: 1000,
+          useWebWorker: true,
+        };
+
+        const compressedFile = await imageCompression(file, options);
+        validCompressedImages.push(compressedFile);
+      } catch (err) {
+        console.error("Compression error:", err);
+        seterrorMessage("Image compression failed.");
+        return;
+      }
     }
 
-    try {
-      const options = {
-        maxSizeMB: 1, // Compress to ~1MB max
-        maxWidthOrHeight: 1000,
-        useWebWorker: true,
-      };
-
-      const compressedFile = await imageCompression(file, options);
-      validCompressedImages.push(compressedFile);
-    } catch (err) {
-      console.error("Compression error:", err);
-      seterrorMessage("Image compression failed.");
-      return;
-    }
-  }
-
-  seterrorMessage("");
-  setFormData((prevData) => ({
-    ...prevData,
-    images: [...prevData.images, ...validCompressedImages],
-  }));
-};
+    seterrorMessage("");
+    setFormData((prevData) => ({
+      ...prevData,
+      images: [...prevData.images, ...validCompressedImages],
+    }));
+  };
 
   const handleImageRemove = (index) => {
     const newImages = formData.images.filter((_, i) => i !== index);
@@ -169,13 +175,18 @@ const handleImageUpload = async (e) => {
     newFormData.append("price", formData.price);
     newFormData.append("subcategory", formData.subcategory);
     newFormData.append("title", formData.title);
-    newFormData.append("availability",formData.availability);
+    newFormData.append("availability", formData.availability);
 
     // Append the images array (assuming images is an array of File objects)
-
+    console.log("ye");
     if (formData.images && formData.images.length > 0) {
       formData.images.forEach((image, index) => {
-        if (image?.type === 'image/jpeg') {
+        if (
+          image?.type === "image/jpeg" ||
+          image?.type === "image/png" ||
+          image?.type === "image/jpg" ||
+          image?.type === "image/webp"
+        ) {
           newFormData.append(`images`, image);
         } else {
           newFormData.append("oldImages", image);
@@ -215,7 +226,7 @@ const handleImageUpload = async (e) => {
   return (
     <div className="max-w-4xl mx-auto p-3 rounded-lg border border-gray-100">
       <h2 className="text-xl lg:text-3xl font-semibold mb-4 text-center py-3 border-b border-[rgba(91,92,96,0.2)]">
-        { "EDIT ITEM"}
+        {"EDIT ITEM"}
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -233,19 +244,19 @@ const handleImageUpload = async (e) => {
           placeholder="Description"
           className="w-full border border-[rgba(5,10,27,0.33)] p-2 rounded"
         ></textarea>
-            <div className="relative w-full">
-  <input
-    type="number"
-    name="price"
-    value={formData.price}
-    onChange={handleChange}
-    placeholder="Price per day"
-    className="w-full pr-16 p-2 border border-[rgba(5,10,27,0.33)] rounded"
-  />
-  <span className="absolute top-1/2 right-3 transform -translate-y-1/2  text-gray-600 pointer-events-none">
-    /day
-  </span>
-</div>
+        <div className="relative w-full">
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
+            onChange={handleChange}
+            placeholder="Price per day"
+            className="w-full pr-16 p-2 border border-[rgba(5,10,27,0.33)] rounded"
+          />
+          <span className="absolute top-1/2 right-3 transform -translate-y-1/2  text-gray-600 pointer-events-none">
+            /day
+          </span>
+        </div>
         <div className="flex space-x-2">
           <select
             name="category"
@@ -275,28 +286,37 @@ const handleImageUpload = async (e) => {
               ))}
           </select>
         </div>
-        <input
-          type="text"
+        <select
           name="location"
-          value={formData.location}
+          value={formData?.location}
           onChange={handleChange}
-          placeholder="Location"
           className="w-full p-2 border border-[rgba(5,10,27,0.33)] rounded"
-        />
+        >
+          <option value="">Select Location</option>
+          {location &&
+            location.map((sub) => (
+              <option key={sub} value={sub}>
+                {sub}
+              </option>
+            ))}
+        </select>
         <div class="my-4">
-  <label for="availability-date" class="block text-sm font-medium text-gray-700 mb-1">
-  Availability Until (future dates only)
-  </label>
-  <input
-    type="date"
-    name="availability"
-    onChange={(e)=>handleChange(e)}
-    min={new Date().toISOString().split("T")[0]}
-    value={formData?.availability}
-    id="availability-date"
-    class="w-full  px-4 py-2 border-2  rounded bg-white text-gray-800 shadow-sm  transition duration-300"
-  />
-</div>
+          <label
+            for="availability-date"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Availability Until (future dates only)
+          </label>
+          <input
+            type="date"
+            name="availability"
+            onChange={(e) => handleChange(e)}
+            min={new Date().toISOString().split("T")[0]}
+            value={formatDateForInput(formData?.availability)}
+            id="availability-date"
+            class="w-full  px-4 py-2 border-2  rounded bg-white text-gray-800 shadow-sm  transition duration-300"
+          />
+        </div>
         <h3 className="font-bold">Upload up to 5 Photos</h3>
         <div className="flex flex-wrap items-center gap-2 overflow-x-auto p-2 border rounded border-[rgba(5,10,27,0.33)]">
           {formData?.images?.map((img, index) => (

@@ -147,7 +147,7 @@ export default function PostItem() {
   // Append the images array (assuming images is an array of File objects)
   if (formData.images && formData.images.length > 0) {
     formData.images.forEach((image, index) => {
-      if (image?.type === 'image/jpeg') {
+      if (image?.type === 'image/jpeg' || image?.type === 'image/png' || image?.type === 'image/jpg' || image?.type === 'image/webp') {
         newFormData.append(`images`, image);
       } else {
         newFormData.append("oldImages", image);

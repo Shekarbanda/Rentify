@@ -19,7 +19,6 @@ exports.editProfileController = async (req, res) => {
     password,
     oldPassword
   } = req.body;
-  console.log(req.body)
   const { userId } = req.user;
   const profileImage = req.file ? req.file.path : null;
   try {
